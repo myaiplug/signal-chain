@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FanTune — Skeuomorphic Plugin Skin</title>
+<style>
+  /* ─── RESET & GLOBALS ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0a0f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow: hidden;
+  }
+
+  /* ─── PLUGIN CHASSIS ─────────────────────────────────────────── */
+  #plugin-chassis {
+    width: 960px;
+    height: 480px;
+    position: relative;
+    border-radius: 12px;
+    box-shadow:
+      0 0 0 1px #1a1a2e,
+      0 4px 60px rgba(0,0,0,0.9),
+      0 0 120px rgba(0, 220, 255, 0.07),
+      inset 0 1px 0 rgba(255,255,255,0.04);
+
+    /* Dark brushed-steel faceplate — radial noise + linear sweep */
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 2px,
+        rgba(255,255,255,0.012) 2px,
+        rgba(255,255,255,0.012) 3px
+      ),
+      linear-gradient(
+        175deg,
+        #1c1c28 0%,
+        #141420 30%,
+        #111118 60%,
+        #0e0e18 100%
+      );
+    overflow: hidden;
+  }
+
+  /* subtle vertical brush marks */
+  #plugin-chassis::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 4px,
+      rgba(255,255,255,0.008) 4px,
+      rgba(255,255,255,0.008) 5px
+    );
+    pointer-events: none;
+    border-radius: 12px;
+  }
+
+  /* edge highlight rim */
+  #plugin-chassis::after {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 12px;
+    border: 1px solid rgba(0,220,255,0.08);
+    box-shadow: inset 0 0 80px rgba(0,0,0,0.6);
+    pointer-events: none;
+  }
+
+  /* ─── HEADER STRIP ───────────────────────────────────────────── */
+  #header {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 52px;
+    background: linear-gradient(180deg, #1a1a2c 0%, #12121e 100%);
+    border-bottom: 1px solid rgba(0,220,255,0.15);
+    display: flex;
+    align-items: center;
+    padding: 0 22px;
+    gap: 16px;
+  }
+
+  /* fan-blade logo mark */
+  #logo-mark {
+    width: 30px; height: 30px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  #logo-mark svg { width: 100%; height: 100%; }
+
+  #brand-name {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #e0f8ff;
+    text-shadow: 0 0 16px rgba(0,220,255,0.6);
+  }
+  #brand-tagline {
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(0,220,255,0.5);
+    margin-top: 2px;
+  }
+  .brand-block { display: flex; flex-direction: column; }
+
+  #preset-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .preset-arrow {
+    width: 22px; height: 22px;
+    border: 1px solid rgba(0,220,255,0.25);
+    border-radius: 4px;
+    background: rgba(0,220,255,0.05);
+    color: rgba(0,220,255,0.7);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    transition: all 0.15s;
+  }
+  .preset-arrow:hover { background: rgba(0,220,255,0.15); border-color: rgba(0,220,255,0.5); }
+  #preset-name {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: #c0f0ff;
+    text-transform: uppercase;
+    min-width: 160px;
+    text-align: center;
+    background: rgba(0,0,0,0.35);
+    padding: 4px 14px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,220,255,0.15);
+  }
+
+  .header-btn {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(200,230,255,0.5);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .header-btn:hover { color: #c0f0ff; border-color: rgba(0,220,255,0.3); }
+
+  #bypass-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,220,255,0.3);
+    background: radial-gradient(circle at 40% 35%, #1e2a2e, #0a1012);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 0 8px rgba(0,220,255,0.15), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  #bypass-btn.active {
+    border-color: #00dcff;
+    box-shadow: 0 0 18px rgba(0,220,255,0.6), inset 0 0 8px rgba(0,220,255,0.2);
+  }
+  #bypass-btn span { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,220,255,0.4); }
+  #bypass-btn.active span { background: #00dcff; box-shadow: 0 0 6px #00dcff; }
+
+  /* ─── WIRE MESH FAN GUARD (centrepiece) ─────────────────────── */
+  #fan-guard-zone {
+    position: absolute;
+    top: 68px; left: 50%;
+    transform: translateX(-50%);
+    width: 280px; height: 280px;
+  }
+
+  #fan-guard-outer {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.7) 100%),
+      conic-gradient(
+        rgba(60,70,90,0.6) 0deg, rgba(30,35,50,0.4) 6deg,
+        rgba(60,70,90,0.6) 6deg, rgba(30,35,50,0.4) 12deg,
+        rgba(60,70,90,0.6) 12deg, rgba(30,35,50,0.4) 18deg,
+        rgba(60,70,90,0.6) 18deg, rgba(30,35,50,0.4) 24deg,
+        rgba(60,70,90,0.6) 24deg, rgba(30,35,50,0.4) 30deg,
+        rgba(60,70,90,0.6) 30deg, rgba(30,35,50,0.4) 36deg,
+        rgba(60,70,90,0.6) 36deg, rgba(30,35,50,0.4) 42deg,
+        rgba(60,70,90,0.6) 42deg, rgba(30,35,50,0.4) 48deg,
+        rgba(60,70,90,0.6) 48deg, rgba(30,35,50,0.4) 54deg,
+        rgba(60,70,90,0.6) 54deg, rgba(30,35,50,0.4) 60deg,
+        rgba(60,70,90,0.6) 60deg, rgba(30,35,50,0.4) 66deg,
+        rgba(60,70,90,0.6) 66deg, rgba(30,35,50,0.4) 72deg,
+        rgba(60,70,90,0.6) 72deg, rgba(30,35,50,0.4) 78deg,
+        rgba(60,70,90,0.6) 78deg, rgba(30,35,50,0.4) 84deg,
+        rgba(60,70,90,0.6) 84deg, rgba(30,35,50,0.4) 90deg,
+        rgba(60,70,90,0.6) 90deg, rgba(30,35,50,0.4) 96deg,
+        rgba(60,70,90,0.6) 96deg, rgba(30,35,50,0.4) 102deg,
+        rgba(60,70,90,0.6) 102deg, rgba(30,35,50,0.4) 108deg,
+        rgba(60,70,90,0.6) 108deg, rgba(30,35,50,0.4) 114deg,
+        rgba(60,70,90,0.6) 114deg, rgba(30,35,50,0.4) 120deg,
+        rgba(60,70,90,0.6) 120deg, rgba(30,35,50,0.4) 126deg,
+        rgba(60,70,90,0.6) 126deg, rgba(30,35,50,0.4) 132deg,
+        rgba(60,70,90,0.6) 132deg, rgba(30,35,50,0.4) 138deg,
+        rgba(60,70,90,0.6) 138deg, rgba(30,35,50,0.4) 144deg,
+        rgba(60,70,90,0.6) 144deg, rgba(30,35,50,0.4) 150deg,
+        rgba(60,70,90,0.6) 150deg, rgba(30,35,50,0.4) 156deg,
+        rgba(60,70,90,0.6) 156deg, rgba(30,35,50,0.4) 162deg,
+        rgba(60,70,90,0.6) 162deg, rgba(30,35,50,0.4) 168deg,
+        rgba(60,70,90,0.6) 168deg, rgba(30,35,50,0.4) 174deg,
+        rgba(60,70,90,0.6) 174deg, rgba(30,35,50,0.4) 180deg,
+        rgba(60,70,90,0.6) 180deg, rgba(30,35,50,0.4) 186deg,
+        rgba(60,70,90,0.6) 186deg, rgba(30,35,50,0.4) 192deg,
+        rgba(60,70,90,0.6) 192deg, rgba(30,35,50,0.4) 198deg,
+        rgba(60,70,90,0.6) 198deg, rgba(30,35,50,0.4) 204deg,
+        rgba(60,70,90,0.6) 204deg, rgba(30,35,50,0.4) 210deg,
+        rgba(60,70,90,0.6) 210deg, rgba(30,35,50,0.4) 216deg,
+        rgba(60,70,90,0.6) 216deg, rgba(30,35,50,0.4) 222deg,
+        rgba(60,70,90,0.6) 222deg, rgba(30,35,50,0.4) 228deg,
+        rgba(60,70,90,0.6) 228deg, rgba(30,35,50,0.4) 234deg,
+        rgba(60,70,90,0.6) 234deg, rgba(30,35,50,0.4) 240deg,
+        rgba(60,70,90,0.6) 240deg, rgba(30,35,50,0.4) 246deg,
+        rgba(60,70,90,0.6) 246deg, rgba(30,35,50,0.4) 252deg,
+        rgba(60,70,90,0.6) 252deg, rgba(30,35,50,0.4) 258deg,
+        rgba(60,70,90,0.6) 258deg, rgba(30,35,50,0.4) 264deg,
+        rgba(60,70,90,0.6) 264deg, rgba(30,35,50,0.4) 270deg,
+        rgba(60,70,90,0.6) 270deg, rgba(30,35,50,0.4) 276deg,
+        rgba(60,70,90,0.6) 276deg, rgba(30,35,50,0.4) 282deg,
+        rgba(60,70,90,0.6) 282deg, rgba(30,35,50,0.4) 288deg,
+        rgba(60,70,90,0.6) 288deg, rgba(30,35,50,0.4) 294deg,
+        rgba(60,70,90,0.6) 294deg, rgba(30,35,50,0.4) 300deg,
+        rgba(60,70,90,0.6) 300deg, rgba(30,35,50,0.4) 306deg,
+        rgba(60,70,90,0.6) 306deg, rgba(30,35,50,0.4) 312deg,
+        rgba(60,70,90,0.6) 312deg, rgba(30,35,50,0.4) 318deg,
+        rgba(60,70,90,0.6) 318deg, rgba(30,35,50,0.4) 324deg,
+        rgba(60,70,90,0.6) 324deg, rgba(30,35,50,0.4) 330deg,
+        rgba(60,70,90,0.6) 330deg, rgba(30,35,50,0.4) 336deg,
+        rgba(60,70,90,0.6) 336deg, rgba(30,35,50,0.4) 342deg,
+        rgba(60,70,90,0.6) 342deg, rgba(30,35,50,0.4) 348deg,
+        rgba(60,70,90,0.6) 348deg, rgba(30,35,50,0.4) 354deg,
+        rgba(60,70,90,0.6) 354deg, rgba(30,35,50,0.4) 360deg
+      );
+    border: 2px solid rgba(0,220,255,0.2);
+    box-shadow:
+      0 0 0 4px rgba(0,0,0,0.5),
+      0 0 0 6px rgba(0,220,255,0.06),
+      0 0 40px rgba(0,220,255,0.08),
+      inset 0 0 30px rgba(0,0,0,0.8);
+  }
+
+  /* concentric rings of the mesh guard */
+  #fan-guard-rings {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: transparent;
+    pointer-events: none;
+  }
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(0,220,255,0.12);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* spinning fan blades canvas */
+  #fan-canvas {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+  }
+
+  /* centre hub */
+  #fan-hub {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #2a3040, #0d0f18);
+    border: 2px solid rgba(0,220,255,0.4);
+    box-shadow: 0 0 14px rgba(0,220,255,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+    z-index: 10;
+  }
+  #fan-hub::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #00dcff;
+    box-shadow: 0 0 10px #00dcff, 0 0 20px rgba(0,220,255,0.6);
+  }
+
+  /* cyan glow ring around entire guard */
+  #guard-glow {
+    position: absolute; inset: -8px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background: transparent;
+    box-shadow: 0 0 30px rgba(0,220,255,0.2), 0 0 80px rgba(0,220,255,0.06);
+    pointer-events: none;
+  }
+
+  /* ─── KNOB SECTIONS ──────────────────────────────────────────── */
+  .knob-section {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .knob-label {
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(0,220,255,0.55);
+  }
+
+  .knob-value {
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    color: rgba(200,240,255,0.4);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .section-label { font-family: 'Segoe UI',system-ui; pointer-events: none; text-transform: uppercase; }
+
+  /* LARGE primary knobs */
+  .knob-lg { width: 62px; height: 62px; }
+  /* MEDIUM secondary knobs */
+  .knob-md { width: 48px; height: 48px; }
+  /* SMALL tertiary knobs */
+  .knob-sm { width: 36px; height: 36px; }
+
+  /* ─── KNOB CANVAS WRAPPERS ───────────────────────────────────── */
+  .knob-wrap {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* ─── LEFT PANEL — Primary Controls ─────────────────────────── */
+  /* SPEED  – large, top-left */
+  #knob-speed  { top: 86px;  left: 48px; }
+  /* PITCH   – large, mid-left */
+  #knob-pitch  { top: 200px; left: 48px; }
+  /* WIDTH   – medium, lower-left */
+  #knob-width  { top: 318px; left: 60px; }
+
+  /* ─── RIGHT PANEL — Tone + Dynamics ─────────────────────────── */
+  /* TONE    – large, top-right */
+  #knob-tone   { top: 86px;  right: 48px; }
+  /* DRIVE   – large, mid-right */
+  #knob-drive  { top: 200px; right: 48px; }
+  /* SPREAD  – medium, lower-right */
+  #knob-spread { top: 318px; right: 60px; }
+
+  /* ─── VINTAGE PANEL — far right ──────────────────────────────── */
+  #knob-vint-rate  { top: 74px;  right: 22px; }
+  #knob-vint-depth { top: 152px; right: 22px; }
+  #knob-vint-fb    { top: 230px; right: 22px; }
+  #knob-vint-mix   { top: 308px; right: 22px; }
+  #label-vintage   { position: absolute; top: 56px; right: 30px; color: #00dcff; font-size: 8.5px; font-weight: bold; opacity: 0.35; letter-spacing: 1.5px; }
+
+  /* ─── BOTTOM ROW — I/O + Mix + Comb ──────────────────────────── */
+  #knob-input  { bottom: 22px; left: 130px; }
+  #knob-comb-freq  { bottom: 22px; left: 194px; }
+  #knob-comb-depth { bottom: 22px; left: 240px; }
+  #knob-comb-fb    { bottom: 22px; left: 286px; }
+  #knob-comb-damp  { bottom: 22px; left: 332px; }
+  #knob-mix    { bottom: 22px; left: 50%; transform: translateX(-50%); }
+  #knob-output { bottom: 22px; right: 130px; }
+
+  /* ─── CYAN TRACK ACCENTS ─────────────────────────────────────── */
+  .track-line {
+    position: absolute;
+    background: linear-gradient(90deg, transparent, rgba(0,220,255,0.35), transparent);
+    height: 1px;
+  }
+  #track-top    { top: 52px;  left: 0; right: 0; }
+  #track-bottom { bottom: 64px; left: 0; right: 0; }
+
+  /* side panel separators */
+  .panel-divider {
+    position: absolute;
+    top: 68px;
+    bottom: 68px;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(0,220,255,0.2) 30%, rgba(0,220,255,0.2) 70%, transparent);
+  }
+  #divider-left   { left: 168px; }
+  #divider-right  { left: 792px; }
+  #divider-vintage { left: 818px; }
+
+  /* ─── METERS ─────────────────────────────────────────────────── */
+  #meters {
+    position: absolute;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 4px;
+    align-items: flex-end;
+  }
+  .meter-bar-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .meter-bar {
+    width: 5px;
+    height: 48px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(0,220,255,0.08);
+  }
+  .meter-fill {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    border-radius: 2px;
+    background: linear-gradient(0deg, #00dcff 0%, #00ffaa 60%, #ff3366 100%);
+    transition: height 0.06s ease-out;
+  }
+  .meter-dot {
+    width: 5px; height: 2px;
+    border-radius: 1px;
+    background: rgba(0,220,255,0.3);
+  }
+
+  /* ─── FOOTER ─────────────────────────────────────────────────── */
+  #footer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 46px;
+    background: linear-gradient(0deg, #0f0f1a 0%, #13131f 100%);
+    border-top: 1px solid rgba(0,220,255,0.1);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 14px;
+  }
+
+  .footer-label {
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(0,220,255,0.35);
+  }
+
+  .toggle-pill {
+    display: flex;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(0,220,255,0.15);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .toggle-pill button {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    background: none;
+    border: none;
+    color: rgba(200,230,255,0.35);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .toggle-pill button.active {
+    background: rgba(0,220,255,0.15);
+    color: #00dcff;
+  }
+
+  .footer-spacer { flex: 1; }
+
+  #version-tag {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    color: rgba(200,230,255,0.2);
+  }
+
+  /* ─── GLOW PULSE ANIMATION ──────────────────────────────────── */
+  @keyframes guardGlow {
+    0%, 100% { box-shadow: 0 0 30px rgba(0,220,255,0.2), 0 0 80px rgba(0,220,255,0.06); }
+    50%       { box-shadow: 0 0 50px rgba(0,220,255,0.35), 0 0 100px rgba(0,220,255,0.12); }
+  }
+  #guard-glow { animation: guardGlow 3s ease-in-out infinite; }
+
+  @keyframes hubPulse {
+    0%, 100% { box-shadow: 0 0 14px rgba(0,220,255,0.4), inset 0 1px 0 rgba(255,255,255,0.15); }
+    50%       { box-shadow: 0 0 26px rgba(0,220,255,0.7), inset 0 1px 0 rgba(255,255,255,0.2); }
+  }
+  #fan-hub { animation: hubPulse 3s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<div id="plugin-chassis">
+
+  <!-- HEADER -->
+  <div id="header">
+    <div id="logo-mark">
+      <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- fan blade 1 -->
+        <path d="M15 15 Q10 6 18 3 Q24 2 22 10 Z" fill="rgba(0,220,255,0.7)"/>
+        <!-- fan blade 2 -->
+        <path d="M15 15 Q24 12 27 20 Q28 26 20 24 Z" fill="rgba(0,220,255,0.5)"/>
+        <!-- fan blade 3 -->
+        <path d="M15 15 Q14 24 6 25 Q0 24 4 17 Z" fill="rgba(0,220,255,0.6)"/>
+        <!-- hub -->
+        <circle cx="15" cy="15" r="3.5" fill="#00dcff" opacity="0.9"/>
+        <circle cx="15" cy="15" r="1.5" fill="white"/>
+      </svg>
+    </div>
+    <div class="brand-block">
+      <span id="brand-name">FanTune</span>
+      <span id="brand-tagline">Spectral Fan Modulator</span>
+    </div>
+
+    <div id="preset-bar">
+      <div class="preset-arrow">&#8249;</div>
+      <div id="preset-name">Arctic Chorus I</div>
+      <div class="preset-arrow">&#8250;</div>
+    </div>
+
+    <button class="header-btn">Save</button>
+    <button class="header-btn">A/B</button>
+    <div id="bypass-btn" class="active" onclick="this.classList.toggle('active')">
+      <span></span>
+    </div>
+  </div>
+
+  <!-- DECORATIVE TRACK LINES -->
+  <div class="track-line" id="track-top"></div>
+  <div class="track-line" id="track-bottom"></div>
+
+  <!-- PANEL DIVIDERS -->
+  <div class="panel-divider" id="divider-left"></div>
+  <div class="panel-divider" id="divider-right"></div>
+  <div class="panel-divider" id="divider-vintage"></div>
+
+  <!-- FAN GUARD CENTREPIECE -->
+  <div id="fan-guard-zone">
+    <div id="fan-guard-outer">
+      <!-- concentric ring overlays -->
+      <div id="fan-guard-rings">
+        <div class="ring" style="width:240px;height:240px;"></div>
+        <div class="ring" style="width:200px;height:200px;"></div>
+        <div class="ring" style="width:160px;height:160px;"></div>
+        <div class="ring" style="width:120px;height:120px;"></div>
+        <div class="ring" style="width:80px;height:80px;"></div>
+      </div>
+      <canvas id="fan-canvas" width="280" height="280"></canvas>
+      <div id="fan-hub"></div>
+    </div>
+    <div id="guard-glow"></div>
+  </div>
+
+  <!-- METERS (flanking fan guard) -->
+  <div id="meters" style="left:calc(50% - 168px); transform:none;">
+    <div class="meter-bar-wrap" id="meter-l">
+      <div class="meter-dot"></div>
+      <div class="meter-bar"><div class="meter-fill" style="height:0%"></div></div>
+    </div>
+  </div>
+  <div id="meters" style="position:absolute;bottom:70px;left:calc(50% + 156px); display:flex;gap:4px;align-items:flex-end;">
+    <div class="meter-bar-wrap" id="meter-r">
+      <div class="meter-dot"></div>
+      <div class="meter-bar"><div class="meter-fill" style="height:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- LEFT KNOBS -->
+  <div class="knob-section" id="knob-speed">
+    <span class="knob-label">Speed</span>
+    <canvas class="knob-wrap knob-lg" width="62" height="62" data-value="0.65" data-param="speed"></canvas>
+    <span class="knob-value">1.2 Hz</span>
+  </div>
+  <div class="knob-section" id="knob-pitch">
+    <span class="knob-label">Pitch</span>
+    <canvas class="knob-wrap knob-lg" width="62" height="62" data-value="0.5" data-param="pitch"></canvas>
+    <span class="knob-value">0 ct</span>
+  </div>
+  <div class="knob-section" id="knob-width">
+    <span class="knob-label">Width</span>
+    <canvas class="knob-wrap knob-md" width="48" height="48" data-value="0.7" data-param="width"></canvas>
+    <span class="knob-value">70%</span>
+  </div>
+
+  <!-- RIGHT KNOBS -->
+  <div class="knob-section" id="knob-tone">
+    <span class="knob-label">Tone</span>
+    <canvas class="knob-wrap knob-lg" width="62" height="62" data-value="0.55" data-param="tone"></canvas>
+    <span class="knob-value">3.4 kHz</span>
+  </div>
+  <div class="knob-section" id="knob-drive">
+    <span class="knob-label">Drive</span>
+    <canvas class="knob-wrap knob-lg" width="62" height="62" data-value="0.4" data-param="drive"></canvas>
+    <span class="knob-value">+4 dB</span>
+  </div>
+  <div class="knob-section" id="knob-spread">
+    <span class="knob-label">Spread</span>
+    <canvas class="knob-wrap knob-md" width="48" height="48" data-value="0.6" data-param="spread"></canvas>
+    <span class="knob-value">60%</span>
+  </div>
+
+  <!-- VINTAGE PANEL -->
+  <div class="section-label" id="label-vintage">VINTAGE</div>
+  <div class="knob-section" id="knob-vint-rate">
+    <span class="knob-label">Vint Rt</span>
+    <canvas class="knob-wrap knob-sm" width="36" height="36" data-value="0.3" data-param="vintRate"></canvas>
+    <span class="knob-value">0.30 Hz</span>
+  </div>
+  <div class="knob-section" id="knob-vint-depth">
+    <span class="knob-label">Vint Dep</span>
+    <canvas class="knob-wrap knob-sm" width="36" height="36" data-value="0" data-param="vintDepth"></canvas>
+    <span class="knob-value">0%</span>
+  </div>
+  <div class="knob-section" id="knob-vint-fb">
+    <span class="knob-label">Vint FB</span>
+    <canvas class="knob-wrap knob-sm" width="36" height="36" data-value="0" data-param="vintFB"></canvas>
+    <span class="knob-value">0%</span>
+  </div>
+  <div class="knob-section" id="knob-vint-mix">
+    <span class="knob-label">Vint Mix</span>
+    <canvas class="knob-wrap knob-sm" width="36" height="36" data-value="0" data-param="vintMix"></canvas>
+    <span class="knob-value">0%</span>
+  </div>
+
+  <!-- BOTTOM I/O KNOBS -->
+  <div class="knob-section" id="knob-input">
+    <span class="knob-label">Input</span>
+    <canvas class="knob-wrap knob-sm" width="36" height="36" data-value="0.75" data-param="input"></canvas>
+    <span class="knob-value">+0 dB</span>
+  </div>
+  <!-- COMB KNOBS -->
+  <div class="knob-section" id="knob-comb-freq">
+    <span class="knob-label">Comb Fr</span>
+    <canvas class="knob-wrap knob-sm" width="36" height="36" data-value="0.35" data-param="combFreq"></canvas>
+    <span class="knob-value">820 Hz</span>
+  </div>
+  <div class="knob-section" id="knob-comb-depth">
+    <span class="knob-label">Comb Dep</span>
+    <canvas class="knob-wrap knob-sm" width="36" height="36" data-value="0" data-param="combDepth"></canvas>
+    <span class="knob-value">0%</span>
+  </div>
+  <div class="knob-section" id="knob-comb-fb">
+    <span class="knob-label">Comb FB</span>
+    <canvas class="knob-wrap knob-sm" width="36" height="36" data-value="0" data-param="combFB"></canvas>
+    <span class="knob-value">0%</span>
+  </div>
+  <div class="knob-section" id="knob-comb-damp">
+    <span class="knob-label">Comb Dmp</span>
+    <canvas class="knob-wrap knob-sm" width="36" height="36" data-value="0.5" data-param="combDamp"></canvas>
+    <span class="knob-value">50%</span>
+  </div>
+  <div class="knob-section" id="knob-mix">
+    <span class="knob-label">Mix</span>
+    <canvas class="knob-wrap knob-md" width="48" height="48" data-value="1.0" data-param="mix"></canvas>
+    <span class="knob-value">100%</span>
+  </div>
+  <div class="knob-section" id="knob-output">
+    <span class="knob-label">Output</span>
+    <canvas class="knob-wrap knob-sm" width="36" height="36" data-value="0.75" data-param="output"></canvas>
+    <span class="knob-value">+0 dB</span>
+  </div>
+
+  <!-- FOOTER -->
+  <div id="footer">
+    <button id="load-audio-btn" class="header-btn" style="margin-right:8px">📁 Load</button>
+    <button id="play-btn" class="header-btn" style="margin-right:8px" disabled>▶ Play</button>
+    <span id="audio-status" class="footer-label" style="color:rgba(0,220,255,0.6)">No audio loaded</span>
+    <div class="footer-spacer"></div>
+    <span class="footer-label">CPU</span>
+    <canvas id="cpu-meter" width="60" height="16"></canvas>
+    <div class="footer-spacer"></div>
+    <span id="version-tag">FanTune v1.0.0 — © 2026</span>
+  </div>
+
+</div><!-- /plugin-chassis -->
+
+<!-- Hidden file input for audio loading -->
+<input type="file" id="audio-file-input" accept="audio/*" style="display:none">
+
+<script>
+// ─────────────────────────────────────────────────────────────────
+// FANTUNE DSP ENGINE — Real-time audio processing
+// ─────────────────────────────────────────────────────────────────
+
+class FanTuneProcessor {
+  constructor(sampleRate = 48000) {
+    this.sampleRate = sampleRate;
+    this.fanSpeed = 50;
+    this.distance = 0.3;
+    this.tone = 0;
+    this.noiseAmount = 0.1;
+    this.fanStyle = 'white';
+
+    // State variables
+    this.phase = 0;
+    this.noisePhase = 0;
+    this.lpState = 0;
+    this.hpState = 0;
+
+    this._updateParams();
+  }
+
+  _updateParams() {
+    this.rotationFreq = 0.5 + (this.fanSpeed / 100) * 4.0;
+    this.bladeCount = this.fanStyle === 'white' ? 3 : 5;
+    this.modDepth = 0.85 * (1.0 - this.distance * 0.7);
+    this.dopplerAmount = (this.fanSpeed / 100) * 0.02 * (1.0 - this.distance * 0.5);
+    this.noiseLevel = this.noiseAmount * (0.05 + (this.fanSpeed / 100) * 0.15);
+
+    const cutoff = 8000 - this.distance * 6000;
+    this.lpCoeff = 1.0 - Math.exp(-2 * Math.PI * cutoff / this.sampleRate);
+
+    if (this.tone >= 0) {
+      this.toneGain = 1.0 + this.tone * 0.5;
+      this.toneFreq = 3000 + this.tone * 5000;
+    } else {
+      this.toneGain = 1.0;
+      this.toneFreq = 3000 + this.tone * 2000;
+    }
+
+    this.toneCoeff = 1.0 - Math.exp(-2 * Math.PI * this.toneFreq / this.sampleRate);
+  }
+
+  setFanSpeed(value) {
+    this.fanSpeed = Math.max(0, Math.min(100, value));
+    this._updateParams();
+  }
+
+  setDistance(value) {
+    this.distance = Math.max(0, Math.min(1, value));
+    this._updateParams();
+  }
+
+  setTone(value) {
+    this.tone = Math.max(-1, Math.min(1, value));
+    this._updateParams();
+  }
+
+  setNoise(value) {
+    this.noiseAmount = Math.max(0, Math.min(1, value));
+    this._updateParams();
+  }
+
+  setFanStyle(style) {
+    this.fanStyle = style;
+    this._updateParams();
+  }
+
+  _fanModulation(samples) {
+    const output = new Float32Array(samples.length);
+    const dt = 1 / this.sampleRate;
+
+    for (let i = 0; i < samples.length; i++) {
+      const t = i * dt;
+      const rotationPhase = 2 * Math.PI * this.rotationFreq * t + this.phase;
+
+      let bladePattern = 0;
+      for (let b = 0; b < this.bladeCount; b++) {
+        const bladeOffset = 2 * Math.PI * b / this.bladeCount;
+        const bladePhase = rotationPhase + bladeOffset;
+        const bladeDip = 0.5 * (1.0 + Math.cos(bladePhase));
+        bladePattern += bladeDip;
+      }
+      bladePattern /= this.bladeCount;
+
+      const asymmetry = 0.1 * Math.sin(rotationPhase * 0.5);
+      bladePattern = bladePattern + asymmetry;
+
+      let modSignal = 1.0 - this.modDepth * (1.0 - bladePattern);
+      const wobble = 1.0 + 0.02 * Math.sin(2 * Math.PI * 0.3 * t) * (this.fanSpeed / 100);
+      modSignal *= wobble;
+
+      output[i] = Math.max(0, Math.min(1, modSignal));
+    }
+
+    this.phase = (2 * Math.PI * this.rotationFreq * samples.length / this.sampleRate + this.phase) % (2 * Math.PI);
+    return output;
+  }
+
+  _generateNoise(samples) {
+    const output = new Float32Array(samples.length);
+    const dt = 1 / this.sampleRate;
+
+    for (let i = 0; i < samples.length; i++) {
+      const t = i * dt;
+
+      // White noise
+      const noise = Math.random() * 2 - 1;
+
+      // Motor hum (60Hz + 120Hz)
+      const motorHum = 0.3 * Math.sin(2 * Math.PI * 60 * t) + 0.15 * Math.sin(2 * Math.PI * 120 * t);
+
+      // Blade whoosh
+      const rotation = 0.5 * (1.0 + Math.sin(2 * Math.PI * this.rotationFreq * t + this.noisePhase));
+      const whoosh = noise * rotation * 0.5;
+
+      output[i] = noise * 0.3 + motorHum + whoosh * 0.4;
+    }
+
+    // Apply low-pass to noise
+    const noiseLp = new Float32Array(samples.length);
+    const noiseCutoff = 4000 - this.distance * 3000;
+    const noiseCoeff = 1.0 - Math.exp(-2 * Math.PI * noiseCutoff / this.sampleRate);
+    let state = 0;
+
+    for (let i = 0; i < samples.length; i++) {
+      state += noiseCoeff * (output[i] - state);
+      noiseLp[i] = state * this.noiseLevel;
+    }
+
+    this.noisePhase = (2 * Math.PI * this.rotationFreq * samples.length / this.sampleRate + this.noisePhase) % (2 * Math.PI);
+    return noiseLp;
+  }
+
+  _applyAirAbsorption(samples) {
+    const output = new Float32Array(samples.length);
+    for (let i = 0; i < samples.length; i++) {
+      this.lpState += this.lpCoeff * (samples[i] - this.lpState);
+      output[i] = this.lpState;
+    }
+    return output;
+  }
+
+  _applyDoppler(samples) {
+    if (this.dopplerAmount < 0.001) {
+      return new Float32Array(samples);
+    }
+    const output = new Float32Array(samples.length);
+    const dt = 1 / this.sampleRate;
+
+    for (let i = 0; i < samples.length; i++) {
+      const t = i * dt;
+      const pitchMod = 1.0 + this.dopplerAmount * Math.sin(2 * Math.PI * this.rotationFreq * t);
+      output[i] = samples[i] * (0.98 + 0.04 * pitchMod);
+    }
+    return output;
+  }
+
+  _applyTone(samples) {
+    if (Math.abs(this.tone) < 0.01) {
+      return new Float32Array(samples);
+    }
+    const output = new Float32Array(samples.length);
+    let state = this.hpState;
+
+    for (let i = 0; i < samples.length; i++) {
+      state += this.toneCoeff * (samples[i] - state);
+      const highFreq = samples[i] - state;
+      const lowFreq = state;
+
+      if (this.tone > 0) {
+        output[i] = lowFreq + highFreq * this.toneGain;
+      } else {
+        output[i] = lowFreq + highFreq * (1.0 + this.tone) * 0.5;
+      }
+    }
+    this.hpState = state;
+    return output;
+  }
+
+  process(samples) {
+    const modEnv = this._fanModulation(samples);
+    const chopped = new Float32Array(samples.map((s, i) => s * modEnv[i]));
+    const absorbed = this._applyAirAbsorption(chopped);
+    const dopplered = this._applyDoppler(absorbed);
+    const toned = this._applyTone(dopplered);
+    const noise = this._generateNoise(samples);
+
+    const mixed = new Float32Array(samples.length);
+    for (let i = 0; i < samples.length; i++) {
+      mixed[i] = toned[i] + noise[i];
+    }
+
+    // Soft clipping
+    const output = new Float32Array(mixed.length);
+    for (let i = 0; i < mixed.length; i++) {
+      const x = mixed[i] * 0.8;
+      output[i] = Math.tanh(x) / 0.8;
+    }
+
+    return output;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// AUDIO INFRASTRUCTURE
+// ─────────────────────────────────────────────────────────────────
+
+let audioContext = null;
+let fanProcessor = null;
+let scriptProcessor = null;
+let audioBuffer = null;
+let audioSource = null;
+let isPlaying = false;
+let playbackStartTime = 0;
+let playbackOffset = 0;
+let analyserNode = null;
+
+function initAudioContext() {
+  if (audioContext) return;
+
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  fanProcessor = new FanTuneProcessor(audioContext.sampleRate);
+
+  // Create nodes
+  scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
+  analyserNode = audioContext.createAnalyser();
+  analyserNode.fftSize = 512;
+
+  // Connect: scriptProcessor → analyser → destination (speakers)
+  scriptProcessor.connect(analyserNode);
+  analyserNode.connect(audioContext.destination);
+
+  scriptProcessor.onaudioprocess = (event) => {
+    const input = event.inputBuffer.getChannelData(0);
+    const output = event.outputBuffer.getChannelData(0);
+    const processed = fanProcessor.process(input);
+    for (let i = 0; i < processed.length; i++) {
+      output[i] = processed[i];
+    }
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────
+// KNOB RENDERER — skeuomorphic 3D rotary dial on Canvas 2D
+// ─────────────────────────────────────────────────────────────────
+const CYAN = '#00dcff';
+const CYAN_DIM = 'rgba(0,220,255,0.35)';
+
+function drawKnob(canvas, value) {
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const cx = w/2, cy = h/2;
+  const r = Math.min(w,h)/2 - 4;
+  ctx.clearRect(0,0,w,h);
+
+  const startAngle = Math.PI * 0.75;   // 135° — bottom-left
+  const endAngle   = Math.PI * 2.25;   // 405° (135° + 270° sweep)
+  const valAngle   = startAngle + value * (endAngle - startAngle);
+
+  // ── outer shadow ring
+  const shadowGrad = ctx.createRadialGradient(cx,cy,r-2,cx,cy,r+3);
+  shadowGrad.addColorStop(0,'rgba(0,0,0,0.0)');
+  shadowGrad.addColorStop(1,'rgba(0,0,0,0.55)');
+  ctx.beginPath(); ctx.arc(cx,cy,r+2,0,Math.PI*2);
+  ctx.fillStyle = shadowGrad; ctx.fill();
+
+  // ── track groove (dark arc full sweep)
+  ctx.beginPath();
+  ctx.arc(cx, cy, r-2, startAngle, endAngle);
+  ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+  ctx.lineWidth = 5; ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // ── cyan fill arc (value)
+  ctx.beginPath();
+  ctx.arc(cx, cy, r-2, startAngle, valAngle);
+  const arcGrad = ctx.createLinearGradient(cx-r,cy,cx+r,cy);
+  arcGrad.addColorStop(0,'rgba(0,180,220,0.8)');
+  arcGrad.addColorStop(1,CYAN);
+  ctx.strokeStyle = arcGrad;
+  ctx.lineWidth = 4; ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // ── glow on arc
+  ctx.save();
+  ctx.shadowColor = CYAN;
+  ctx.shadowBlur = 8;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r-2, Math.max(valAngle-0.3, startAngle), valAngle);
+  ctx.strokeStyle = CYAN;
+  ctx.lineWidth = 4; ctx.lineCap = 'round';
+  ctx.stroke();
+  ctx.restore();
+
+  // ── knob body gradient (brushed steel sphere)
+  const bodyGrad = ctx.createRadialGradient(cx-r*0.2, cy-r*0.25, r*0.05, cx, cy, r-6);
+  bodyGrad.addColorStop(0.0, '#3a3e52');
+  bodyGrad.addColorStop(0.35,'#1e2030');
+  bodyGrad.addColorStop(0.7, '#141620');
+  bodyGrad.addColorStop(1.0, '#0c0e16');
+  ctx.beginPath(); ctx.arc(cx, cy, r-6, 0, Math.PI*2);
+  ctx.fillStyle = bodyGrad; ctx.fill();
+
+  // ── radial brushed-steel lines on body
+  ctx.save();
+  ctx.beginPath(); ctx.arc(cx,cy,r-6,0,Math.PI*2); ctx.clip();
+  for (let i = 0; i < 36; i++) {
+    const a = (i/36)*Math.PI*2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a)*(r-6), cy + Math.sin(a)*(r-6));
+    ctx.strokeStyle = i%2===0 ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.03)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // ── top highlight arc
+  const hlGrad = ctx.createLinearGradient(cx-r*0.6,cy-r*0.8,cx+r*0.3,cy-r*0.1);
+  hlGrad.addColorStop(0,'rgba(255,255,255,0.18)');
+  hlGrad.addColorStop(1,'rgba(255,255,255,0.0)');
+  ctx.beginPath(); ctx.arc(cx, cy, r-7, Math.PI*1.1, Math.PI*1.9);
+  ctx.strokeStyle = hlGrad; ctx.lineWidth = 3; ctx.stroke();
+
+  // ── knob rim border
+  ctx.beginPath(); ctx.arc(cx,cy,r-6,0,Math.PI*2);
+  ctx.strokeStyle = 'rgba(0,220,255,0.2)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // ── pointer dot
+  const dotX = cx + (r-12) * Math.cos(valAngle);
+  const dotY = cy + (r-12) * Math.sin(valAngle);
+  ctx.save();
+  ctx.shadowColor = CYAN; ctx.shadowBlur = 10;
+  ctx.beginPath(); ctx.arc(dotX, dotY, 2.8, 0, Math.PI*2);
+  ctx.fillStyle = CYAN; ctx.fill();
+  ctx.restore();
+}
+
+// ─── init all knobs
+function initKnobs() {
+  document.querySelectorAll('canvas.knob-wrap').forEach(canvas => {
+    let value = parseFloat(canvas.dataset.value) || 0.5;
+    drawKnob(canvas, value);
+
+    // drag interaction
+    let dragging = false, startY = 0, startVal = 0;
+    canvas.addEventListener('mousedown', e => {
+      dragging = true; startY = e.clientY; startVal = value;
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const dy = (startY - e.clientY) / 140;
+      value = Math.max(0, Math.min(1, startVal + dy));
+      drawKnob(canvas, value);
+      canvas.dataset.value = value;
+      updateValueLabel(canvas, value);
+    });
+    window.addEventListener('mouseup', () => { dragging = false; });
+
+    // scroll wheel
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      value = Math.max(0, Math.min(1, value - e.deltaY * 0.003));
+      drawKnob(canvas, value);
+      updateValueLabel(canvas, value);
+    }, { passive: false });
+  });
+}
+
+function updateValueLabel(canvas, value) {
+  if (!audioContext) initAudioContext();
+
+  const section = canvas.closest('.knob-section');
+  if (!section) return;
+  const lbl = section.querySelector('.knob-value');
+  if (!lbl) return;
+  const param = canvas.dataset.param;
+
+  switch(param) {
+    case 'speed':
+      fanProcessor.setFanSpeed(value * 100);
+      lbl.textContent = (value * 4).toFixed(2) + ' Hz';
+      break;
+    case 'pitch':
+      fanProcessor.setDistance(value);
+      lbl.textContent = Math.round(value * 100) + ' %';
+      break;
+    case 'width':
+      lbl.textContent = Math.round(value * 100) + '%';
+      break;
+    case 'tone':
+      fanProcessor.setTone((value - 0.5) * 2);
+      lbl.textContent = Math.round((value - 0.5) * 200) + ' %';
+      break;
+    case 'drive':
+      fanProcessor.setNoise(value);
+      lbl.textContent = Math.round(value * 100) + '%';
+      break;
+    case 'spread':
+      lbl.textContent = Math.round(value * 100) + '%';
+      break;
+    case 'input':
+      lbl.textContent = (value > 0.5 ? '+' : '') + Math.round((value - 0.75) * 24) + ' dB';
+      break;
+    case 'mix':
+      lbl.textContent = Math.round(value * 100) + '%';
+      break;
+    case 'output':
+      lbl.textContent = (value > 0.5 ? '+' : '') + Math.round((value - 0.75) * 24) + ' dB';
+      break;
+    case 'combFreq':
+      var combHz = 80 + value * 2120;
+      lbl.textContent = Math.round(combHz) + ' Hz';
+      break;
+    case 'combDepth':
+      lbl.textContent = Math.round(value * 100) + '%';
+      break;
+    case 'combFB':
+      lbl.textContent = Math.round(value * 100) + '%';
+      break;
+    case 'combDamp':
+      lbl.textContent = Math.round(value * 100) + '%';
+      break;
+    case 'vintRate':
+      var rateHz = 0.05 + value * 7.95;
+      lbl.textContent = (rateHz < 1 ? rateHz.toFixed(2) : rateHz.toFixed(1)) + ' Hz';
+      break;
+    case 'vintDepth':
+      lbl.textContent = Math.round(value * 100) + '%';
+      break;
+    case 'vintFB':
+      lbl.textContent = Math.round(value * 100) + '%';
+      break;
+    case 'vintMix':
+      lbl.textContent = Math.round(value * 100) + '%';
+      break;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// FAN BLADE ANIMATION
+// ─────────────────────────────────────────────────────────────────
+const fanCanvas = document.getElementById('fan-canvas');
+const fanCtx = fanCanvas.getContext('2d');
+let fanAngle = 0;
+let fanSpeed = 0.012; // radians/frame — driven by Speed knob
+
+function drawFan(angle) {
+  const w = fanCanvas.width, h = fanCanvas.height;
+  const cx = w/2, cy = h/2;
+  fanCtx.clearRect(0,0,w,h);
+  fanCtx.save();
+  fanCtx.translate(cx,cy);
+  fanCtx.rotate(angle);
+
+  const bladeCount = 7;
+  for (let i = 0; i < bladeCount; i++) {
+    fanCtx.save();
+    fanCtx.rotate((i/bladeCount) * Math.PI*2);
+
+    fanCtx.beginPath();
+    fanCtx.moveTo(0,0);
+    // blade shape: curved quad
+    fanCtx.bezierCurveTo(
+      -12, -30,
+       8, -80,
+       20, -90
+    );
+    fanCtx.bezierCurveTo(
+       32, -80,
+       28, -40,
+        0,   0
+    );
+    fanCtx.closePath();
+
+    const bladeGrad = fanCtx.createLinearGradient(0,0,0,-90);
+    bladeGrad.addColorStop(0.0,'rgba(18,22,36,0.95)');
+    bladeGrad.addColorStop(0.5,'rgba(28,34,52,0.85)');
+    bladeGrad.addColorStop(1.0,'rgba(0,180,220,0.08)');
+    fanCtx.fillStyle = bladeGrad;
+    fanCtx.fill();
+
+    // blade edge highlight
+    fanCtx.strokeStyle = 'rgba(0,220,255,0.18)';
+    fanCtx.lineWidth = 1;
+    fanCtx.stroke();
+
+    fanCtx.restore();
+  }
+  fanCtx.restore();
+}
+
+function animateFan() {
+  // sync speed to Speed knob value
+  const speedCanvas = document.querySelector('[data-param="speed"]');
+  if (speedCanvas) {
+    fanSpeed = parseFloat(speedCanvas.dataset.value) * 0.06 + 0.002;
+  }
+  fanAngle += fanSpeed;
+  drawFan(fanAngle);
+  requestAnimationFrame(animateFan);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// METER ANIMATION
+// ─────────────────────────────────────────────────────────────────
+const meterFills = document.querySelectorAll('.meter-fill');
+function animateMeters() {
+  meterFills.forEach(fill => {
+    const cur = parseFloat(fill.style.height)||0;
+    const target = 20 + Math.random()*70;
+    const next = cur*0.75 + target*0.25;
+    fill.style.height = next+'%';
+  });
+  setTimeout(animateMeters, 80);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// CPU METER
+// ─────────────────────────────────────────────────────────────────
+const cpuCanvas = document.getElementById('cpu-meter');
+const cpuCtx = cpuCanvas.getContext('2d');
+let cpuVal = 0.18;
+
+function drawCPU() {
+  cpuCtx.clearRect(0,0,60,16);
+  cpuCtx.fillStyle = 'rgba(0,0,0,0.4)';
+  cpuCtx.roundRect(0,3,60,10,2); cpuCtx.fill();
+
+  const grd = cpuCtx.createLinearGradient(0,0,60,0);
+  grd.addColorStop(0,'#00dcff'); grd.addColorStop(0.7,'#00ffaa'); grd.addColorStop(1,'#ff3366');
+  cpuCtx.fillStyle = grd;
+  cpuCtx.roundRect(1,4,Math.max(2,(cpuVal*58)),8,1.5); cpuCtx.fill();
+
+  cpuCtx.fillStyle='rgba(200,240,255,0.35)';
+  cpuCtx.font='7px system-ui'; cpuCtx.textAlign='right';
+  cpuCtx.fillText(Math.round(cpuVal*100)+'%', 58, 12);
+}
+function animateCPU() {
+  cpuVal = cpuVal*0.92 + (0.12+Math.random()*0.22)*0.08;
+  drawCPU(); requestAnimationFrame(animateCPU);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// AUDIO FILE LOADING & PLAYBACK
+// ─────────────────────────────────────────────────────────────────
+
+document.getElementById('load-audio-btn').addEventListener('click', () => {
+  document.getElementById('audio-file-input').click();
+});
+
+document.getElementById('audio-file-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  if (!audioContext) initAudioContext();
+
+  const reader = new FileReader();
+  reader.onload = async (event) => {
+    try {
+      audioBuffer = await audioContext.decodeAudioData(event.target.result);
+      document.getElementById('audio-status').textContent = `${file.name} (${(audioBuffer.duration).toFixed(2)}s)`;
+      document.getElementById('play-btn').disabled = false;
+      isPlaying = false;
+      document.getElementById('play-btn').textContent = '▶ Play';
+    } catch (err) {
+      console.error('Audio decode error:', err);
+      document.getElementById('audio-status').textContent = 'Error loading audio';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+document.getElementById('play-btn').addEventListener('click', () => {
+  if (!audioContext) initAudioContext();
+  if (!audioBuffer) return;
+
+  if (isPlaying) {
+    // Stop playback
+    if (audioSource) {
+      audioSource.stop();
+    }
+    isPlaying = false;
+    document.getElementById('play-btn').textContent = '▶ Play';
+  } else {
+    // Start playback
+    audioSource = audioContext.createBufferSource();
+    audioSource.buffer = audioBuffer;
+    audioSource.connect(scriptProcessor);
+
+    playbackStartTime = audioContext.currentTime;
+    audioSource.start(0, playbackOffset);
+    isPlaying = true;
+    document.getElementById('play-btn').textContent = '⏸ Stop';
+
+    audioSource.onended = () => {
+      isPlaying = false;
+      document.getElementById('play-btn').textContent = '▶ Play';
+      playbackOffset = 0;
+    };
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────
+// REAL-TIME METERING
+// ─────────────────────────────────────────────────────────────────
+
+function updateMeters() {
+  if (!analyserNode) return;
+
+  const freqData = new Uint8Array(analyserNode.frequencyBinCount);
+  analyserNode.getByteFrequencyData(freqData);
+
+  const rms = Math.sqrt(freqData.reduce((sum, val) => sum + val * val, 0) / freqData.length) / 255;
+  const meterLeft = document.querySelector('#meter-l .meter-fill');
+  const meterRight = document.querySelector('#meter-r .meter-fill');
+
+  if (meterLeft) {
+    const current = parseFloat(meterLeft.style.height) || 0;
+    const target = rms * 100;
+    meterLeft.style.height = (current * 0.8 + target * 0.2) + '%';
+  }
+  if (meterRight) {
+    const current = parseFloat(meterRight.style.height) || 0;
+    const target = rms * 100 * 0.9;
+    meterRight.style.height = (current * 0.8 + target * 0.2) + '%';
+  }
+
+  requestAnimationFrame(updateMeters);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// TOGGLE PILL INTERACTION
+// ─────────────────────────────────────────────────────────────────
+document.querySelectorAll('.toggle-pill').forEach(pill => {
+  pill.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      pill.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────────────────────────────
+initKnobs();
+animateFan();
+animateMeters();
+animateCPU();
+updateMeters();
+</script>
+</body>
+</html>

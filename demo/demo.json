@@ -1,0 +1,116 @@
+{
+  "title": "Crazy Stacy",
+  "excerptSeconds": 45,
+  "before": {
+    "score": 70,
+    "rating": "Usable after technical corrections",
+    "file": "before.m4a",
+    "metrics": {
+      "loudness": {
+        "integrated_lufs": -12.61,
+        "loudness_range_lu": 6.72,
+        "true_peak_dbtp": 0.33,
+        "threshold_lufs": null,
+        "sample_peak_dbfs": -0.3
+      },
+      "peak_dbfs": -0.3,
+      "rms_dbfs": -10.7,
+      "dynamic_range_db": 10.4,
+      "crest_factor": 3.31,
+      "clipped_samples_estimate": 831,
+      "noise_floor_dbfs": -34.19,
+      "stereo_width_percent": 1.0,
+      "phase_correlation": 0.98,
+      "spectral_balance_db": {
+        "sub_bass": 0.0,
+        "bass": -3.3,
+        "low_mid": -12.3,
+        "mid": -18.1,
+        "presence": -28.1,
+        "high": -34.2,
+        "air": -42.2
+      }
+    }
+  },
+  "after": {
+    "score": 90,
+    "rating": "Release ready",
+    "file": "after.m4a",
+    "metrics": {
+      "loudness": {
+        "integrated_lufs": -13.63,
+        "loudness_range_lu": 3.68,
+        "true_peak_dbtp": 0.04,
+        "threshold_lufs": null,
+        "sample_peak_dbfs": -1.0
+      },
+      "peak_dbfs": -1.0,
+      "rms_dbfs": -11.78,
+      "dynamic_range_db": 10.78,
+      "crest_factor": 3.46,
+      "clipped_samples_estimate": 0,
+      "noise_floor_dbfs": -31.78,
+      "stereo_width_percent": 1.4,
+      "phase_correlation": 0.971,
+      "spectral_balance_db": {
+        "sub_bass": 0.0,
+        "bass": -4.7,
+        "low_mid": -11.7,
+        "mid": -17.7,
+        "presence": -28.0,
+        "high": -33.7,
+        "air": -41.5
+      }
+    }
+  },
+  "rows": [
+    {
+      "metric": "Score",
+      "before": 70,
+      "after": 90,
+      "delta": 20
+    },
+    {
+      "metric": "Rating",
+      "before": "Usable after technical corrections",
+      "after": "Release ready",
+      "delta": ""
+    },
+    {
+      "metric": "Integrated LUFS",
+      "before": -12.61,
+      "after": -13.63,
+      "delta": -1.02
+    },
+    {
+      "metric": "True peak dBTP",
+      "before": 0.33,
+      "after": 0.04,
+      "delta": -0.29
+    },
+    {
+      "metric": "Dynamic range dB",
+      "before": 10.4,
+      "after": 10.78,
+      "delta": 0.38
+    },
+    {
+      "metric": "Clipped samples",
+      "before": 831,
+      "after": 0,
+      "delta": -831
+    },
+    {
+      "metric": "Noise floor dBFS",
+      "before": -34.19,
+      "after": -31.78,
+      "delta": 2.41
+    },
+    {
+      "metric": "Phase correlation",
+      "before": 0.98,
+      "after": 0.971,
+      "delta": -0.01
+    }
+  ]
+}
