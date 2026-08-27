@@ -1,0 +1,47 @@
+{
+  "product": {
+    "name": "ScrewAI",
+    "tagline": "17 codeine flavors. Drag. Drop. Render. Each bottle is a different syrup strain.",
+    "price": "Unlimited local .bat renders · one-time · forever",
+    "url": "https://myaiplug.github.io/ScrewAI-App/"
+  },
+  "tracks": [
+    {
+      "id": "session-a",
+      "title": "Night Ride Cut",
+      "file": "../demo/before.m4a",
+      "blurb": "Vocal-forward mix — hear how syrup strains stretch the pocket."
+    },
+    {
+      "id": "session-b",
+      "title": "Trunk Demo",
+      "file": "../demo/33-hard-before.m4a",
+      "blurb": "Harder bounce — strains show bass sink and slow glide."
+    },
+    {
+      "id": "session-c",
+      "title": "Slab Session",
+      "file": "../demo/bassboost-before.m4a",
+      "blurb": "Hot low end — purple wave and trunk flavors stay heavy when slowed."
+    }
+  ],
+  "strains": [
+    { "id": "wock", "name": "Wock Purple", "color": "#6D28D9", "slowdown": 0.85, "tag": "codeine" },
+    { "id": "tuss", "name": "Tuss Red", "color": "#B91C1C", "slowdown": 0.88, "tag": "codeine" },
+    { "id": "tris", "name": "Tris Pink", "color": "#BE185D", "slowdown": 0.87, "tag": "codeine" },
+    { "id": "activis", "name": "Activis Black & Gray", "color": "#F59E0B", "slowdown": 0.85, "tag": "codeine" },
+    { "id": "lean-drift", "name": "Lean Drift", "color": "#8B5CF6", "slowdown": 0.94, "tag": "lean" },
+    { "id": "codeine-glide", "name": "Codeine Glide", "color": "#7C3AED", "slowdown": 0.92, "tag": "codeine" },
+    { "id": "codeine-sway", "name": "Codeine Sway", "color": "#6D28D9", "slowdown": 0.93, "tag": "codeine" },
+    { "id": "basic-slow", "name": "Basic Slow", "color": "#22C55E", "slowdown": 0.85, "tag": "slow" },
+    { "id": "mild-slow", "name": "Mildly Slowed", "color": "#10B981", "slowdown": 0.88, "tag": "slow" },
+    { "id": "extreme-slow", "name": "Extreme Slow", "color": "#B91C1C", "slowdown": 0.65, "tag": "slow" },
+    { "id": "htown", "name": "H-Town Float", "color": "#BE185D", "slowdown": 0.91, "tag": "screw" },
+    { "id": "purple-wave", "name": "Purple Wave", "color": "#6D28D9", "slowdown": 0.88, "tag": "wock" },
+    { "id": "slow-burn", "name": "Slow Burn", "color": "#B91C1C", "slowdown": 0.78, "tag": "slow" },
+    { "id": "tape-melt", "name": "Tape Melt", "color": "#F59E0B", "slowdown": 0.88, "tag": "tape" },
+    { "id": "phonk", "name": "Phonk Shadow", "color": "#C084FC", "slowdown": 0.84, "tag": "phonk" },
+    { "id": "trunk", "name": "Trunk Pressure", "color": "#E11D48", "slowdown": 0.89, "tag": "bass" },
+    { "id": "quali", "name": "Quali Blue", "color": "#3B82F6", "slowdown": 0.86, "tag": "quali" }
+  ]
+}

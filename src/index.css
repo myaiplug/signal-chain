@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: #03080a;
+  --color-panel: #041216;
+  --color-panel2: #062028;
+  --color-edge: #1a5048;
+  --color-signal: #00ffaa;
+  --color-beam: #00d4ff;
+  --color-acid: #9eff00;
+  --color-alert: #ff4d4d;
+  --color-glow: #dffee6;
+  --color-dim: #7aafa0;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+html {
+  background: var(--color-void);
+  scrollbar-width: thin;
+  scrollbar-color: #1a5048 #03080a;
+}
+
+body {
+  font-family: var(--font-display);
+  color: var(--color-glow);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-signal);
+  color: var(--color-void);
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #03080a; }
+::-webkit-scrollbar-thumb { background: #1a5048; border-radius: 3px; }
+
+/* ---------- film grain ---------- */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: -100%;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain-shift 0.9s steps(4) infinite;
+}
+@keyframes grain-shift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2%, 3%); }
+  50% { transform: translate(3%, -2%); }
+  75% { transform: translate(-3%, -3%); }
+  100% { transform: translate(2%, 2%); }
+}
+
+/* ---------- scanlines ---------- */
+.scanlines::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 91;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.12) 3px,
+    transparent 4px
+  );
+}
+
+/* ---------- machined panel ---------- */
+.panel {
+  background: linear-gradient(160deg, #062028 0%, #041216 60%, #03080a 100%);
+  border: 1px solid #1a5048;
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(223, 255, 230, 0.06),
+    inset 0 -12px 30px rgba(0, 0, 0, 0.55),
+    0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.panel-inset {
+  background: #020a0c;
+  border: 1px solid #12322c;
+  border-radius: 10px;
+  box-shadow: inset 0 4px 18px rgba(0, 0, 0, 0.8);
+}
+
+.screw {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #3d6658, #0a1410 70%);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 1px 2px #000;
+  position: relative;
+}
+.screw::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 70%;
+  height: 1.5px;
+  background: #0a1410;
+  transform: rotate(38deg);
+}
+
+.led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1a4038;
+  box-shadow: 0 0 0 1px #000;
+}
+.led.on {
+  background: var(--color-signal);
+  box-shadow: 0 0 8px var(--color-signal), 0 0 2px #fff inset;
+}
+
+.text-glow { text-shadow: 0 0 18px rgba(0, 255, 170, 0.45); }
+
+.hairline { border-color: rgba(26, 80, 72, 0.55); }
+
+/* ---------- reel spin ---------- */
+@keyframes reel-spin { to { transform: rotate(360deg); } }
+.reel-spinning { animation: reel-spin 2.4s linear infinite; }
+.reel-spinning-slow { animation: reel-spin 7s linear infinite; }
+
+/* ---------- tape stop page warp ---------- */
+#page-warp {
+  transform-origin: 50% 100%;
+  will-change: transform, filter;
+}
+
+/* ---------- spectrum cursor dot ---------- */
+#cursor-dot {
+  position: fixed;
+  top: 0; left: 0;
+  width: 14px; height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 95;
+  background: radial-gradient(circle, rgba(0,255,170,0.9), rgba(0,212,255,0.25) 60%, transparent 70%);
+  mix-blend-mode: screen;
+}
+
+/* ---------- marquee ---------- */
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 28s linear infinite;
+}
+
+/* ---------- VU needle ---------- */
+@keyframes needle-idle {
+  0%, 100% { transform: rotate(-32deg); }
+  50% { transform: rotate(-24deg); }
+}
+
+/* ---------- spotify chassis tint ---------- */
+.spotify-chassis iframe {
+  border-radius: 8px;
+  display: block;
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain::after, .marquee-track, .reel-spinning, .reel-spinning-slow { animation: none !important; }
+}

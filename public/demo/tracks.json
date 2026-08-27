@@ -1,0 +1,362 @@
+{
+  "tracks": [
+    {
+      "id": "crazy-stacy",
+      "title": "Crazy Stacy",
+      "problem": "831 clipped samples and an unsafe true peak on a vocal mix.",
+      "excerptSeconds": 45,
+      "beforeFile": "before.m4a",
+      "afterFile": "after.m4a",
+      "before": {
+        "score": 70,
+        "rating": "Usable after technical corrections",
+        "file": "before.m4a",
+        "metrics": {
+          "loudness": {
+            "integrated_lufs": -12.61,
+            "loudness_range_lu": 6.72,
+            "true_peak_dbtp": 0.33,
+            "threshold_lufs": null,
+            "sample_peak_dbfs": -0.3
+          },
+          "peak_dbfs": -0.3,
+          "rms_dbfs": -10.7,
+          "dynamic_range_db": 10.4,
+          "crest_factor": 3.31,
+          "clipped_samples_estimate": 831,
+          "noise_floor_dbfs": -34.19,
+          "stereo_width_percent": 1.0,
+          "phase_correlation": 0.98,
+          "spectral_balance_db": {
+            "sub_bass": 0.0,
+            "bass": -3.3,
+            "low_mid": -12.3,
+            "mid": -18.1,
+            "presence": -28.1,
+            "high": -34.2,
+            "air": -42.2
+          }
+        }
+      },
+      "after": {
+        "score": 90,
+        "rating": "Release ready",
+        "file": "after.m4a",
+        "metrics": {
+          "loudness": {
+            "integrated_lufs": -13.63,
+            "loudness_range_lu": 3.68,
+            "true_peak_dbtp": 0.04,
+            "threshold_lufs": null,
+            "sample_peak_dbfs": -1.0
+          },
+          "peak_dbfs": -1.0,
+          "rms_dbfs": -11.78,
+          "dynamic_range_db": 10.78,
+          "crest_factor": 3.46,
+          "clipped_samples_estimate": 0,
+          "noise_floor_dbfs": -31.78,
+          "stereo_width_percent": 1.4,
+          "phase_correlation": 0.971,
+          "spectral_balance_db": {
+            "sub_bass": 0.0,
+            "bass": -4.7,
+            "low_mid": -11.7,
+            "mid": -17.7,
+            "presence": -28.0,
+            "high": -33.7,
+            "air": -41.5
+          }
+        }
+      },
+      "rows": [
+        {
+          "metric": "Score",
+          "before": 70,
+          "after": 90,
+          "delta": 20
+        },
+        {
+          "metric": "Rating",
+          "before": "Usable after technical corrections",
+          "after": "Release ready",
+          "delta": ""
+        },
+        {
+          "metric": "Integrated LUFS",
+          "before": -12.61,
+          "after": -13.63,
+          "delta": -1.02
+        },
+        {
+          "metric": "True peak dBTP",
+          "before": 0.33,
+          "after": 0.04,
+          "delta": -0.29
+        },
+        {
+          "metric": "Dynamic range dB",
+          "before": 10.4,
+          "after": 10.78,
+          "delta": 0.38
+        },
+        {
+          "metric": "Clipped samples",
+          "before": 831,
+          "after": 0,
+          "delta": -831
+        },
+        {
+          "metric": "Noise floor dBFS",
+          "before": -34.19,
+          "after": -31.78,
+          "delta": 2.41
+        },
+        {
+          "metric": "Phase correlation",
+          "before": 0.98,
+          "after": 0.971,
+          "delta": -0.01
+        }
+      ]
+    },
+    {
+      "id": "beatgohard",
+      "title": "BeatGoHard",
+      "problem": "True peak above the \u22121.0 dBTP streaming ceiling with no sample clips.",
+      "excerptSeconds": 45,
+      "beforeFile": "33-hard-before.m4a",
+      "afterFile": "33-hard-after.m4a",
+      "before": {
+        "score": 77,
+        "rating": "Good with minor corrections",
+        "file": "33-hard-before.m4a",
+        "metrics": {
+          "loudness": {
+            "integrated_lufs": -15.11,
+            "loudness_range_lu": 12.37,
+            "true_peak_dbtp": -0.3,
+            "threshold_lufs": null
+          },
+          "peak_dbfs": -0.3,
+          "rms_dbfs": -12.93,
+          "dynamic_range_db": 12.63,
+          "crest_factor": 4.28,
+          "clipped_samples_estimate": 0,
+          "noise_floor_dbfs": -30.04,
+          "stereo_width_percent": 3.7,
+          "phase_correlation": 0.926,
+          "spectral_balance_db": {
+            "sub_bass": 0.0,
+            "bass": -3.6,
+            "low_mid": -13.8,
+            "mid": -20.9,
+            "presence": -28.0,
+            "high": -35.7,
+            "air": -45.7
+          }
+        }
+      },
+      "after": {
+        "score": 95,
+        "rating": "Release ready",
+        "file": "33-hard-after.m4a",
+        "metrics": {
+          "loudness": {
+            "integrated_lufs": -15.42,
+            "loudness_range_lu": 12.16,
+            "true_peak_dbtp": -1.0,
+            "threshold_lufs": null
+          },
+          "peak_dbfs": -1.0,
+          "rms_dbfs": -13.18,
+          "dynamic_range_db": 12.18,
+          "crest_factor": 4.06,
+          "clipped_samples_estimate": 0,
+          "noise_floor_dbfs": -30.09,
+          "stereo_width_percent": 3.9,
+          "phase_correlation": 0.923,
+          "spectral_balance_db": {
+            "sub_bass": 0.0,
+            "bass": -3.8,
+            "low_mid": -13.8,
+            "mid": -20.9,
+            "presence": -28.0,
+            "high": -35.7,
+            "air": -45.7
+          }
+        }
+      },
+      "rows": [
+        {
+          "metric": "Score",
+          "before": 77,
+          "after": 95,
+          "delta": 18
+        },
+        {
+          "metric": "Rating",
+          "before": "Good with minor corrections",
+          "after": "Release ready",
+          "delta": ""
+        },
+        {
+          "metric": "Integrated LUFS",
+          "before": -15.11,
+          "after": -15.42,
+          "delta": -0.31
+        },
+        {
+          "metric": "True peak dBTP",
+          "before": -0.3,
+          "after": -1.0,
+          "delta": -0.7
+        },
+        {
+          "metric": "Dynamic range dB",
+          "before": 12.63,
+          "after": 12.18,
+          "delta": -0.45
+        },
+        {
+          "metric": "Clipped samples",
+          "before": 0,
+          "after": 0,
+          "delta": 0
+        },
+        {
+          "metric": "Noise floor dBFS",
+          "before": -30.04,
+          "after": -30.09,
+          "delta": -0.05
+        },
+        {
+          "metric": "Phase correlation",
+          "before": 0.926,
+          "after": 0.923,
+          "delta": -0.0
+        }
+      ]
+    },
+    {
+      "id": "drippin",
+      "title": "Drippin",
+      "problem": "231k clipped samples, \u221211.9 LUFS, and a +1.06 dBTP overshoot.",
+      "excerptSeconds": 45,
+      "beforeFile": "bassboost-before.m4a",
+      "afterFile": "bassboost-after.m4a",
+      "before": {
+        "score": 66,
+        "rating": "Usable after technical corrections",
+        "file": "bassboost-before.m4a",
+        "metrics": {
+          "loudness": {
+            "integrated_lufs": -11.92,
+            "loudness_range_lu": 1.16,
+            "true_peak_dbtp": 1.06,
+            "threshold_lufs": null,
+            "sample_peak_dbfs": 0.0
+          },
+          "peak_dbfs": 0.0,
+          "rms_dbfs": -7.98,
+          "dynamic_range_db": 7.98,
+          "crest_factor": 2.51,
+          "clipped_samples_estimate": 231310,
+          "noise_floor_dbfs": null,
+          "stereo_width_percent": 0.9,
+          "phase_correlation": 0.982,
+          "spectral_balance_db": {
+            "sub_bass": 0.0,
+            "bass": -9.1,
+            "low_mid": -18.9,
+            "mid": -25.4,
+            "presence": -34.8,
+            "high": -40.1,
+            "air": -48.7
+          }
+        }
+      },
+      "after": {
+        "score": 93,
+        "rating": "Release ready",
+        "file": "bassboost-after.m4a",
+        "metrics": {
+          "loudness": {
+            "integrated_lufs": -14.12,
+            "loudness_range_lu": 0.86,
+            "true_peak_dbtp": 0.23,
+            "threshold_lufs": null,
+            "sample_peak_dbfs": -1.0
+          },
+          "peak_dbfs": -1.0,
+          "rms_dbfs": -11.08,
+          "dynamic_range_db": 10.08,
+          "crest_factor": 3.19,
+          "clipped_samples_estimate": 0,
+          "noise_floor_dbfs": null,
+          "stereo_width_percent": 1.7,
+          "phase_correlation": 0.966,
+          "spectral_balance_db": {
+            "sub_bass": 0.0,
+            "bass": -8.8,
+            "low_mid": -16.2,
+            "mid": -22.1,
+            "presence": -31.6,
+            "high": -37.1,
+            "air": -45.2
+          }
+        }
+      },
+      "rows": [
+        {
+          "metric": "Score",
+          "before": 66,
+          "after": 93,
+          "delta": 27
+        },
+        {
+          "metric": "Rating",
+          "before": "Usable after technical corrections",
+          "after": "Release ready",
+          "delta": ""
+        },
+        {
+          "metric": "Integrated LUFS",
+          "before": -11.92,
+          "after": -14.12,
+          "delta": -2.2
+        },
+        {
+          "metric": "True peak dBTP",
+          "before": 1.06,
+          "after": 0.23,
+          "delta": -0.83
+        },
+        {
+          "metric": "Dynamic range dB",
+          "before": 7.98,
+          "after": 10.08,
+          "delta": 2.1
+        },
+        {
+          "metric": "Clipped samples",
+          "before": 231310,
+          "after": 0,
+          "delta": -231310
+        },
+        {
+          "metric": "Noise floor dBFS",
+          "before": null,
+          "after": null,
+          "delta": ""
+        },
+        {
+          "metric": "Phase correlation",
+          "before": 0.982,
+          "after": 0.966,
+          "delta": -0.02
+        }
+      ]
+    }
+  ]
+}
