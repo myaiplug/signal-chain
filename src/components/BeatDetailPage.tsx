@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { releaseAudio } from "../audio/bus";
 import { useExclusiveAudio } from "../audio/useExclusiveAudio";
 import { STORE_URL } from "../data/artists";
-import { BUNDLE_TIERS, type Beat, calculateBundlePrice } from "../data/beats";
+import { BUNDLE_TIERS, type Beat } from "../data/beats";
 
 interface BeatDetailPageProps {
   beat: Beat;
@@ -15,7 +15,7 @@ export function BeatDetailPage({ beat, onClose }: BeatDetailPageProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(beat.duration);
   const [volume, setVolume] = useState(0.7);
-  const [selectedTier, setSelectedTier] = useState<'single' | 'bundle5' | 'bundle10'>('single');
+  const [selectedTier, setSelectedTier] = useState<string>('single');
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number | null>(null);
@@ -156,7 +156,7 @@ export function BeatDetailPage({ beat, onClose }: BeatDetailPageProps) {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const handleAddToCart = (tier: 'single' | 'bundle5' | 'bundle10') => {
+  const handleAddToCart = (tier: string) => {
     setSelectedTier(tier);
   };
 
@@ -365,13 +365,14 @@ export function BeatDetailPage({ beat, onClose }: BeatDetailPageProps) {
                     PURCHASE OPTIONS
                   </h2>
                   <div className="relative z-10 space-y-3">
-                    {BUNDLE_TIERS.map(tier => {
+                    {beat.price.single === null ? (
+                      <p className="text-[#7aafa0] text-sm font-mono" data-testid="detail-unpriced">PREVIEW ONLY · NOT LISTED IN THE BEAT MOB STORE</p>
+                    ) : BUNDLE_TIERS.map(tier => {
                       const isSelected = selectedTier === tier.id;
-                      const priceInfo = calculateBundlePrice([beat.id], tier.id);
-                      return (
+                                            return (
                         <motion.button
                           key={tier.id}
-                          onClick={() => handleAddToCart(tier.id as any)}
+                          onClick={() => handleAddToCart(tier.id)}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           className={`w-full p-4 rounded-xl text-left transition-all duration-200 ${
@@ -394,20 +395,10 @@ export function BeatDetailPage({ beat, onClose }: BeatDetailPageProps) {
                             </div>
                             <div className="text-right">
                               <div className="font-bold text-white text-xl">
-                                ${priceInfo.total.toFixed(2)}
+                                ${tier.price.toFixed(2)}
                               </div>
-                              {priceInfo.savings > 0 && (
-                                <div className="text-[#00ffaa] text-xs font-mono">
-                                  SAVE ${priceInfo.savings.toFixed(2)}
-                                </div>
-                              )}
                             </div>
                           </div>
-                          {tier.id === 'bundle10' && priceInfo.freeCount > 0 && (
-                            <div className="mt-2 pt-2 border-t border-[#1a5048]/20 text-[#00ffaa] text-sm font-mono">
-                              + {priceInfo.freeCount} FREE BEATS INCLUDED
-                            </div>
-                          )}
                         </motion.button>
                       );
                     })}

@@ -1,3 +1,6 @@
+export const STORE_SINGLE = 1.99;
+export const STORE_ALL = 19.99;
+
 const asset = (p: string) => (import.meta.env.BASE_URL || "/") + p;
 
 export interface Beat {
@@ -21,10 +24,9 @@ export interface Beat {
     vocals?: string;
   };
   license: 'lease' | 'exclusive' | 'unlimited';
+  /** Store price (beat-mob-store-ruby discount rack). null = no store listing, preview only. */
   price: {
-    single: number;
-    bundle5: number;
-    bundle10: number;
+    single: number | null;
   };
   description: string;
   producedBy: string;
@@ -47,7 +49,7 @@ export const BEATS: Beat[] = [
     truePeak: -0.8,
     dynamicRange: 8.5,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'AI-crafted trap banger with thunderous 808s, haunting melody, and crisp hi-hats. Generated at 142 BPM for maximum energy. Perfect for dark trap, drill, or high-energy workout playlists.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-06-11',
@@ -67,7 +69,7 @@ export const BEATS: Beat[] = [
     truePeak: -1.2,
     dynamicRange: 9.2,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Classic West Coast vibe at 96 BPM. Warm synth leads, deep funk bassline, and swung drums. Built for laid-back storytelling, cruising music, or smooth hook-driven tracks.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-06-13',
@@ -87,7 +89,7 @@ export const BEATS: Beat[] = [
     truePeak: -1.0,
     dynamicRange: 8.8,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: null },
     description: 'Alternate compressed mix of the West Coast 96 session. Same vibe, smaller footprint. Great for quick demos or streaming-ready delivery.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -107,7 +109,7 @@ export const BEATS: Beat[] = [
     truePeak: -0.5,
     dynamicRange: 7.8,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Alternate take on the South Memphis 78 phonk session. Heavier cowbell, deeper 808 saturation, darker atmosphere. Classic Memphis sound at half-time tempo.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -127,7 +129,7 @@ export const BEATS: Beat[] = [
     truePeak: -0.3,
     dynamicRange: 6.5,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'UK drill meets US trap. Sliding 808s, rapid hi-hat triplets, menacing piano stabs. Built for aggressive flows and high-impact drops.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -147,7 +149,7 @@ export const BEATS: Beat[] = [
     truePeak: -1.5,
     dynamicRange: 10.2,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Soulful Detroit boom bap at 85 BPM. Dusty drums, jazz chord progressions, warm vinyl texture. Made for conscious lyrics and storytelling.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -167,7 +169,7 @@ export const BEATS: Beat[] = [
     truePeak: -0.9,
     dynamicRange: 8.9,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Classic 90s East Coast boom bap. Piano-driven loop, punchy kick/snare, deep bass. Authentic golden era sound for pure lyricism.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -187,7 +189,7 @@ export const BEATS: Beat[] = [
     truePeak: -0.6,
     dynamicRange: 7.2,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Festival-ready trap heater at 140 BPM. Massive drop, euphoric lead, rolling bass. Designed for main stage energy and crowd reaction.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -207,7 +209,7 @@ export const BEATS: Beat[] = [
     truePeak: -1.1,
     dynamicRange: 8.4,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Contemporary melodic trap at 105 BPM. Emotional chord progression, modern drum programming, space for vocals. Radio-ready structure with intro/hook/verse/bridge.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -227,7 +229,7 @@ export const BEATS: Beat[] = [
     truePeak: -0.4,
     dynamicRange: 6.8,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'UK drill influenced trap with signature sliding 808s and syncopated hi-hats. Dark, menacing atmosphere for aggressive delivery.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -247,7 +249,7 @@ export const BEATS: Beat[] = [
     truePeak: -0.7,
     dynamicRange: 8.1,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Zaytoven-inspired Atlanta trap at 130 BPM. Sparkling bell melody, rolling hi-hats, deep 808s. Classic South sound for melodic trap flows.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -267,7 +269,7 @@ export const BEATS: Beat[] = [
     truePeak: -0.7,
     dynamicRange: 8.1,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Alternate drum pattern on the South Atlanta 130 session. Same melody, different pocket. Gives you options for different vocal approaches.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -287,7 +289,7 @@ export const BEATS: Beat[] = [
     truePeak: -1.0,
     dynamicRange: 8.5,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Stripped-back version with more space for vocals. Minimal drum arrangement, melody takes center stage. Ideal for melodic rappers and singers.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -307,7 +309,7 @@ export const BEATS: Beat[] = [
     truePeak: -0.6,
     dynamicRange: 7.5,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Authentic Memphis phonk at half-time 78 BPM. Distorted cowbell, lo-fi texture, sinking 808s. The sound that defined an underground movement.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -327,7 +329,7 @@ export const BEATS: Beat[] = [
     truePeak: -0.2,
     dynamicRange: 6.2,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Straight-up banger. No frills, just hard-hitting drums and a hypnotic loop. Sometimes simple hits hardest.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -347,7 +349,7 @@ export const BEATS: Beat[] = [
     truePeak: -0.8,
     dynamicRange: 7.5,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: null },
     description: 'First take on the 142 BPM heavy trap session. Raw energy, minimal processing. Captures the initial spark.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -367,7 +369,7 @@ export const BEATS: Beat[] = [
     truePeak: -1.0,
     dynamicRange: 7.8,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Refined version with better mix balance. 808 sits cleaner, hi-hats more defined. Production polish on the same core idea.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
@@ -387,67 +389,30 @@ export const BEATS: Beat[] = [
     truePeak: -1.1,
     dynamicRange: 8.0,
     license: 'unlimited',
-    price: { single: 19.99, bundle5: 69.99, bundle10: 99.99 },
+    price: { single: STORE_SINGLE },
     description: 'Final mastered version of the 142 BPM trap session. Streaming-ready loudness, polished transients, maximum impact.',
     producedBy: 'The Beat Mob AI',
     releaseDate: '2026-08-24',
   },
 ];
 
+// Prices mirror https://beat-mob-store-ruby.vercel.app/discount.html exactly:
+// "$1.99 a beat. All 16 for $19.99." (Unlimited license.) Nothing else is offered there.
+
+export const PRICED_BEATS = (): Beat[] => BEATS.filter(b => b.price.single !== null);
+
 export const BUNDLE_TIERS = [
-  {
-    id: 'single',
-    name: 'Single Beat',
-    count: 1,
-    price: 0, // per-beat price varies
-    savings: 0,
-    description: 'Pick any single beat',
-    badge: null,
-  },
-  {
-    id: 'bundle5',
-    name: '5-Beat Bundle',
-    count: 5,
-    price: 99.99, // fixed for premium, 69.99 for standard
-    savings: 50,
-    description: 'Mix & match any 5 beats — save ~$50',
-    badge: 'BEST VALUE',
-  },
-  {
-    id: 'bundle10',
-    name: '10-Beat Bundle + 3 FREE',
-    count: 13,
-    price: 149.99, // fixed for premium, 99.99 for standard
-    savings: 120,
-    description: 'Get 10 beats + 3 FREE — save $120+',
-    badge: 'MAX SAVINGS',
-  },
+  { id: 'single', name: 'Single Beat', label: 'SINGLE', price: STORE_SINGLE, description: 'Pick any beat · Unlimited license', badge: null as string | null },
+  { id: 'all', name: 'All 16 Beats', label: 'FULL RACK', price: STORE_ALL, description: 'Every priced beat on the rack as one $19.99 line', badge: 'ALL 16' as string | null },
 ];
 
-export function calculateBundlePrice(beatIds: string[], tierId: string): { total: number; savings: number; freeCount: number } {
-  const beats = beatIds.map(id => BEATS.find(b => b.id === id)).filter(Boolean) as Beat[];
-  if (beats.length === 0) return { total: 0, savings: 0, freeCount: 0 };
-
-  const isPremium = beats.some(b => b.sizeMB > 10); // WAV files are premium
-
-  if (tierId === 'single') {
-    const total = beats.reduce((sum, b) => sum + b.price.single, 0);
-    return { total, savings: 0, freeCount: 0 };
-  }
-
-  if (tierId === 'bundle5') {
-    const price = isPremium ? 99.99 : 69.99;
-    const individualTotal = beats.slice(0, 5).reduce((sum, b) => sum + b.price.single, 0);
-    return { total: price, savings: individualTotal - price, freeCount: 0 };
-  }
-
-  if (tierId === 'bundle10') {
-    const price = isPremium ? 149.99 : 99.99;
-    const individualTotal = beats.slice(0, 10).reduce((sum, b) => sum + b.price.single, 0);
-    return { total: price, savings: individualTotal + (3 * beats[0]?.price.single || 0) - price, freeCount: 3 };
-  }
-
-  return { total: 0, savings: 0, freeCount: 0 };
+/** Cart total, the store's way: $1.99 per priced beat, or $19.99 when the whole priced rack is in. */
+export function cartTotal(beatIds: string[]): number {
+  const priced = PRICED_BEATS();
+  const picked = priced.filter(b => beatIds.includes(b.id));
+  if (picked.length === 0) return 0;
+  if (picked.length === priced.length) return STORE_ALL;
+  return Math.round(picked.length * STORE_SINGLE * 100) / 100;
 }
 
 export function getBeatsByGenre(genre: string): Beat[] {

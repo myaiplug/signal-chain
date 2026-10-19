@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BEATS, BUNDLE_TIERS, type Beat, calculateBundlePrice } from "../data/beats";
+import { BEATS, BUNDLE_TIERS, PRICED_BEATS, type Beat, cartTotal } from "../data/beats";
 import { BeatDetailPage } from "./BeatDetailPage";
 import { STORE_URL } from "../data/artists";
 import { releaseAudio } from "../audio/bus";
@@ -23,7 +23,6 @@ export function BeatStore() {
   const [activeGenre, setActiveGenre] = useState<Filter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItems, setCartItems] = useState<string[]>([]);
-  const [showBundlePanel, setShowBundlePanel] = useState(false);
 
   const filteredBeats = BEATS.filter((b) => {
     const matchesGenre =
@@ -61,18 +60,19 @@ export function BeatStore() {
           <p className="font-mono text-sm text-[#1a5048]/70 max-w-2xl">
             18 production-ready beats. Every track mixed, mastered, and ready for vocals.
             <br />
-            Buy single beats or save big with bundle deals.
+            Same prices as the Beat Mob store discount rack: $1.99 a beat, or all 16 for $19.99.
           </p>
         </div>
 
         {/* Bundle Tiers */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
           {BUNDLE_TIERS.map((tier) => (
             <motion.div
               key={tier.id}
               whileHover={{ scale: 1.02, y: -2 }}
               className="relative bg-[#0a120a]/80 border border-[#1a5048]/20 rounded-xl p-5 cursor-pointer group overflow-hidden"
-              onClick={() => setShowBundlePanel(showBundlePanel ? false : true)}
+              onClick={() => { if (tier.id === "all") setCartItems(PRICED_BEATS().map((b) => b.id)); }}
+              data-testid={`tier-${tier.id}`}
             >
               {tier.badge && (
                 <div className="absolute top-3 right-3 px-2 py-0.5 bg-[#00ffaa] text-black text-[9px] font-mono font-bold rounded">
@@ -80,18 +80,14 @@ export function BeatStore() {
                 </div>
               )}
               <div className="font-mono text-[10px] tracking-[0.2em] text-[#1a5048] mb-2">
-                {tier.count === 1
-                  ? "SINGLE"
-                  : tier.count === 5
-                  ? "5-Beat Bundle"
-                  : "10+3 BUNDLE"}
+                {tier.label}
               </div>
               <div className="text-3xl font-bold text-white mb-1">
-                ${tier.id === "single" ? "19.99+" : tier.price.toFixed(2)}
+                ${tier.price.toFixed(2)}
               </div>
               <div className="text-sm text-[#1a5048]/80 mb-3">{tier.description}</div>
               <div className="font-mono text-xs text-[#00ffaa] opacity-0 group-hover:opacity-100 transition-opacity">
-                {tier.savings > 0 ? `SAVE $${tier.savings}` : "PAY ONLY FOR WHAT YOU WANT"}
+                {tier.id === "all" ? "TAP TO SELECT ALL 16" : "PICK ANY BEAT BELOW"}
               </div>
             </motion.div>
           ))}
@@ -206,11 +202,9 @@ export function BeatStore() {
                       {cartItems.length} {cartItems.length === 1 ? "beat" : "beats"} selected
                     </div>
                     <div className="font-mono text-[#1a5048]/60 text-[10px]">
-                      {cartItems.length >= 13
-                        ? "MAX SAVINGS — 10 + 3 FREE"
-                        : cartItems.length >= 5
-                        ? "UPGRADE TO 10+3 FOR MAX SAVINGS"
-                        : "ADD MORE TO UNLOCK BUNDLE SAVINGS"}
+                      {cartItems.length >= PRICED_BEATS().length
+                        ? "FULL RACK — ALL 16 FOR $19.99"
+                        : "$1.99 A BEAT · ALL 16 FOR $19.99"}
                     </div>
                   </div>
                 </div>
@@ -230,7 +224,7 @@ export function BeatStore() {
                   >
                     CHECKOUT
                     <span className="font-mono text-[10px] opacity-70">
-                      ${calculateBundlePrice(cartItems, cartItems.length >= 10 ? "bundle10" : cartItems.length >= 5 ? "bundle5" : "single").total.toFixed(2)}
+                      ${cartTotal(cartItems).toFixed(2)}
                     </span>
                   </a>
                 </div>
@@ -409,7 +403,7 @@ function BeatCard({
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="text-white font-bold text-base leading-tight truncate">{beat.title}</h3>
-          <button
+          {beat.price.single !== null && <button
             onClick={handleAdd}
             data-testid="add-to-cart"
             aria-label={isSelected ? `Remove ${beat.title} from selection` : `Add ${beat.title} to selection`}
@@ -429,7 +423,7 @@ function BeatCard({
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
             )}
-          </button>
+          </button>}
         </div>
 
         <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -441,8 +435,8 @@ function BeatCard({
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="font-mono text-sm text-white font-bold">
-            ${beat.price.single.toFixed(2)}
+          <div className="font-mono text-sm text-white font-bold" data-testid="beat-price">
+            {beat.price.single !== null ? `$${beat.price.single.toFixed(2)}` : <span className="text-[#7aafa0] text-[10px] tracking-[0.2em]">PREVIEW</span>}
           </div>
           <div className="flex items-center gap-1.5">
             <span className="font-mono text-[9px] text-[#1a5048]/50">

@@ -75,7 +75,8 @@ export function VaultSection() {
           </h2>
           <p className="mx-auto mt-4 max-w-md font-mono text-[10px] leading-relaxed text-[#7aafa0]">
             13 trap instrumentals. Produced, mixed, mastered, tagged and
-            shipped. This is the product - previews are 40-second tagged cuts.
+            shipped. Singles are $9.99 each; the full ProBeats pack is on
+            Gumroad, name your price from $49. Previews are 40-second tagged cuts.
           </p>
         </div>
 
@@ -119,6 +120,7 @@ export function VaultSection() {
                   <span className="w-12 text-right font-mono text-[8px] tabular-nums text-[#1a5048]">
                     {t.bpm ? `${t.bpm} BPM` : "TRAP"}
                   </span>
+                  <span className="w-11 text-right font-mono text-[9px] tabular-nums text-[#9eff00]" data-testid="vault-price">$9.99</span>
                 </motion.button>
               );
             })}
@@ -147,11 +149,11 @@ export function VaultSection() {
               className="w-full cursor-pointer rounded-xl border-2 border-[#9eff00] bg-[#1a3000] px-8 py-3.5 text-center font-mono text-xs font-bold tracking-[0.3em] text-[#dffee6] sm:w-auto"
               style={{ boxShadow: "0 0 30px rgba(158,255,0,0.2)" }}
             >
-              GET THE VAULT AT THE BEAT MOB STORE ↗
+              GET THE VAULT · $9.99 A SINGLE ↗
             </motion.a>
           </div>
           <p className="mt-4 text-center font-mono text-[8px] tracking-[0.25em] text-[#1a5048]">
-            WAV + STEMS · UNLIMITED COMMERCIAL USE · PRODUCED BY THE BEAT MOB
+            PROBEATS PACK ON GUMROAD · NAME YOUR PRICE FROM $49 · PRODUCED BY THE BEAT MOB
           </p>
         </div>
       </div>
