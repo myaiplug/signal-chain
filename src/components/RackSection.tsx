@@ -12,6 +12,19 @@ const BASE = import.meta.env.BASE_URL || "/";
 /* ---------------- SCREW DIAL UNIT (site-wide soundtrack pitch) ---------------- */
 function ScrewDialUnit() {
   const [angle, setAngle] = useState(0);
+  const [on, setOn] = useState(engine.playing);
+
+  // reflect the real state (it stops when any other track starts)
+  useEffect(() => {
+    const iv = window.setInterval(() => setOn(engine.playing), 300);
+    return () => window.clearInterval(iv);
+  }, []);
+
+  const toggleSoundtrack = () => {
+    if (engine.playing) engine.pause();
+    else engine.start();
+    window.setTimeout(() => setOn(engine.playing), 80);
+  };
   const dialRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ startY: number; startAngle: number } | null>(null);
 
@@ -44,6 +57,13 @@ function ScrewDialUnit() {
       <div className="absolute right-3 top-3 flex gap-1.5"><div className="screw" /><div className="screw" /></div>
       <div className="font-mono text-[8px] tracking-[0.4em] text-[#7aafa0]">SCREWAI · PITCH DRIVE</div>
       <div className="mt-2 font-display text-xl font-700 tracking-tight text-[#dffee6]">THE SCREW</div>
+      <button
+        onClick={toggleSoundtrack}
+        data-testid="soundtrack-toggle"
+        className={`relative z-10 mt-3 cursor-pointer rounded-lg border px-3 py-1.5 font-mono text-[8px] tracking-[0.3em] transition-colors ${on ? "border-[#00ffaa] bg-[#003828] text-[#dffee6]" : "border-[#1a5048] text-[#7aafa0] hover:border-[#00ffaa66]"}`}
+      >
+        {on ? "❚❚ HOUSE SOUNDTRACK" : "▶ HOUSE SOUNDTRACK"}
+      </button>
 
       <div
         ref={dialRef}
@@ -81,8 +101,9 @@ function ScrewDialUnit() {
         </div>
       </div>
       <p className="mt-4 text-center font-mono text-[9px] leading-relaxed text-[#7aafa0]">
-        Drag the dial - the site's own soundtrack pitches and slows. Live
-        turntable DSP, the core idea behind ScrewAI.
+        Start the house soundtrack (Applied Pressure, from The Beat Mob
+        vault), then drag the dial - it pitches and slows live. Turntable
+        DSP, the core idea behind ScrewAI.
       </p>
       <a href={TOOL_LINKS.screwai} target="_blank" rel="noreferrer" className="mt-4 font-mono text-[9px] tracking-[0.3em] text-[#00ffaa] underline-offset-4 hover:underline">
         OPEN FULL APP →

@@ -4,6 +4,7 @@ export interface Artist {
   tag: string
   role: string
   blurb: string
+  /** verified Spotify artist id (open.spotify.com/artist/<id>) */
   spotifyId: string
   accent: string
   glow: string
@@ -104,6 +105,7 @@ export const TOOL_LINKS = {
   coproducer: "https://myaiplug.github.io/coproducer-web/index.html",
   stemsplit: "https://liminal-stemsplit.onrender.com/",
   screwai: "https://myaiplug.github.io/ScrewAI-App/",
+  store: "https://beat-mob-store.vercel.app/",
   github: "https://github.com/myaiplug",
   email: "thebeatmobmedia@gmail.com",
 }

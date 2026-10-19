@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useExclusiveAudio } from "../audio/useExclusiveAudio";
+import { releaseAudio } from "../audio/bus";
 
 const BASE = import.meta.env.BASE_URL || "/";
 const asset = (p: string) => BASE + p;
@@ -9,6 +10,7 @@ const asset = (p: string) => BASE + p;
 export const VAULT_LINKS = {
   gumroad: "https://thebeatmob.gumroad.com/", // TODO: exact Vault product URL
   shopify: "https://thebeatmob.com/", // TODO: exact Vault product URL
+  store: "https://beat-mob-store.vercel.app/",
 };
 
 interface VaultTrack {
@@ -40,18 +42,30 @@ export function VaultSection() {
   const claim = useExclusiveAudio("vault", () => {
     audioRef.current?.pause();
     setPlayingIdx(null);
-  });
+  }, "THE COLLECTIVE VAULT");
 
   const toggle = (idx: number) => {
-    if (!audioRef.current) audioRef.current = new Audio();
+    if (!audioRef.current) {
+      const fresh = new Audio();
+      fresh.addEventListener("ended", () => {
+        setPlayingIdx(null);
+        releaseAudio("vault");
+      });
+      audioRef.current = fresh;
+    }
     const el = audioRef.current;
     if (playingIdx === idx) {
       el.pause();
       setPlayingIdx(null);
+      releaseAudio("vault");
       return;
     }
+    claim(); // stop everything else first, THEN start
     el.src = asset(VAULT_TRACKS[idx].file);
-    el.play().then(() => claim()).catch(() => {});
+    el.play().catch(() => {
+      setPlayingIdx(null);
+      releaseAudio("vault");
+    });
     setPlayingIdx(idx);
   };
 
@@ -149,6 +163,16 @@ export function VaultSection() {
               className="w-full cursor-pointer rounded-xl border border-[#1a5048] px-8 py-3.5 text-center font-mono text-xs font-bold tracking-[0.3em] text-[#7aafa0] sm:w-auto"
             >
               SHOPIFY
+            </motion.a>
+            <motion.a
+              href={VAULT_LINKS.store}
+              target="_blank"
+              rel="noreferrer"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              className="w-full cursor-pointer rounded-xl border border-[#9eff0066] px-8 py-3.5 text-center font-mono text-xs font-bold tracking-[0.3em] text-[#9eff00] sm:w-auto"
+            >
+              BEAT MOB STORE ↗
             </motion.a>
           </div>
           <p className="mt-4 text-center font-mono text-[8px] tracking-[0.25em] text-[#1a5048]">

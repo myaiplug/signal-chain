@@ -1,13 +1,12 @@
 import { useRef, useState } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { ARTISTS, type Artist } from "../data/artists";
-import { engine } from "../audio/engine";
+import { useSpotifyEmbed } from "../audio/spotify";
 import { TiltPanel, GlitchText } from "./vfx";
 
 const BASE = import.meta.env.BASE_URL || "/";
 
-function Reel({ artist, active, onClick }: { artist: Artist; active: boolean; onClick: () => void }) {
-  const spinning = active && engine.playing;
+function Reel({ artist, active, spinning, onClick }: { artist: Artist; active: boolean; spinning: boolean; onClick: () => void }) {
   return (
     <motion.button
       onClick={onClick}
@@ -58,76 +57,90 @@ function Reel({ artist, active, onClick }: { artist: Artist; active: boolean; on
   );
 }
 
-export function CatalogSection() {
+export function CatalogSection({ initial }: { initial: Artist }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [selected, setSelected] = useState<Artist>(ARTISTS[0]);
+  const [selected, setSelected] = useState<Artist>(initial);
+  // build the embed only when the section gets close to the viewport
+  const near = useInView(ref, { once: true, margin: "600px 0px" });
+  const deck = useSpotifyEmbed({
+    owner: "spotify-catalog",
+    label: selected.name,
+    uri: `spotify:artist:${selected.spotifyId}`,
+    height: 352,
+    enabled: near,
+  });
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const shelfY = useTransform(scrollYProgress, [0, 1], [60, -60]);
 
   return (
-    <section ref={ref} className="relative min-h-[100svh] px-4 py-28 sm:px-8">
+    <section ref={ref} id="catalog" className="relative min-h-[100svh] px-4 py-28 sm:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-14 flex items-end justify-between">
           <div>
-            <div className="font-mono text-[10px] tracking-[0.5em] text-[#00ffaa]">01 · THE CATALOG</div>
+            <div className="font-mono text-[10px] tracking-[0.5em] text-[#00ffaa]">01 · THE ROSTER</div>
           <h2 className="mt-3 font-display text-4xl font-700 tracking-tight text-[#dffee6] sm:text-6xl">
             <GlitchText text="PULL A REEL." />
           </h2>
           </div>
           <p className="hidden max-w-xs text-right font-mono text-[10px] leading-relaxed text-[#7aafa0] sm:block">
-            Four identities, all engineered end-to-end. Real records, real
-            streams. Load a tape to hear it.
+            Four artists, all engineered end-to-end by Brian Jutz. Real
+            records, real streams. Load a reel to hear it.
           </p>
         </div>
 
         {/* reel shelf */}
         <motion.div style={{ y: shelfY }} className="grid grid-cols-2 gap-8 sm:grid-cols-4 sm:gap-6">
           {ARTISTS.map((a) => (
-            <Reel key={a.id} artist={a} active={selected.id === a.id} onClick={() => setSelected(a)} />
+            <Reel key={a.id} artist={a} active={selected.id === a.id} spinning={selected.id === a.id && deck.playing} onClick={() => setSelected(a)} />
           ))}
         </motion.div>
 
-        {/* the machine chassis with spotify inside */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selected.id}
-            initial={{ opacity: 0, y: 30, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 120, damping: 18 }}
-            className="mx-auto mt-16 max-w-3xl"
-          >
-            <TiltPanel className="panel p-4 sm:p-6">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 px-1">
-              <div className="flex items-center gap-3">
-                <span className="led on" style={{ background: selected.accent, boxShadow: `0 0 8px ${selected.glow}` }} />
-                <div>
-                  <div className="font-display text-lg font-600 text-[#dffee6]">{selected.name}</div>
-                  <div className="font-mono text-[9px] tracking-[0.3em] text-[#7aafa0]">{selected.role}</div>
+        {/* the machine chassis with spotify inside - one persistent, controllable embed */}
+        <motion.div
+          initial={{ opacity: 0, y: 30, scale: 0.98 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ type: "spring", stiffness: 120, damping: 18 }}
+          className="mx-auto mt-16 max-w-3xl"
+        >
+          <TiltPanel className="panel p-4 sm:p-6">
+            <motion.div key={selected.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2 px-1">
+                <div className="flex items-center gap-3">
+                  <span className="led on" style={{ background: selected.accent, boxShadow: `0 0 8px ${selected.glow}` }} />
+                  <div>
+                    <div className="font-display text-lg font-600 text-[#dffee6]">{selected.name}</div>
+                    <div className="font-mono text-[9px] tracking-[0.3em] text-[#7aafa0]">{selected.role}</div>
+                  </div>
+                </div>
+                <div className="flex gap-1">
+                  {[...Array(4)].map((_, i) => <div key={i} className="screw" />)}
                 </div>
               </div>
-              <div className="flex gap-1">
-                {[...Array(4)].map((_, i) => <div key={i} className="screw" />)}
-              </div>
-            </div>
-            <p className="mb-4 px-1 font-mono text-[10px] leading-relaxed text-[#7aafa0]">{selected.blurb}</p>
+              <p className="mb-4 px-1 font-mono text-[10px] leading-relaxed text-[#7aafa0]">{selected.blurb}</p>
+            </motion.div>
             <div
-              className="spotify-chassis panel-inset relative overflow-hidden p-2"
+              className="spotify-chassis panel-inset relative min-h-[360px] overflow-hidden p-2"
               style={{ boxShadow: `inset 0 0 40px ${selected.glow.replace("0.35", "0.12").replace("0.3", "0.1")}, inset 0 4px 18px rgba(0,0,0,0.8)` }}
+              data-testid="catalog-deck"
+              data-playing={deck.playing ? "1" : "0"}
             >
-              <iframe
-                title={`${selected.name} on Spotify`}
-                src={`https://open.spotify.com/embed/artist/${selected.spotifyId}?utm_source=generator&theme=0`}
-                width="100%"
-                height="352"
-                frameBorder="0"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy"
-              />
+              {deck.status === "failed" ? (
+                <iframe
+                  title={`${selected.name} on Spotify`}
+                  src={`https://open.spotify.com/embed/artist/${selected.spotifyId}?utm_source=generator&theme=0`}
+                  width="100%"
+                  height="352"
+                  frameBorder="0"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                />
+              ) : (
+                <div ref={deck.hostRef} className="h-[352px] w-full" />
+              )}
             </div>
-            </TiltPanel>
-          </motion.div>
-        </AnimatePresence>
+          </TiltPanel>
+        </motion.div>
       </div>
     </section>
   );

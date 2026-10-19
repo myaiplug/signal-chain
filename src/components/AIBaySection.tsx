@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useExclusiveAudio } from "../audio/useExclusiveAudio";
+import { releaseAudio } from "../audio/bus";
 
 const BASE = import.meta.env.BASE_URL || "/";
 const asset = (p: string) => BASE + p;
@@ -48,6 +49,10 @@ export function AIBaySection() {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef(0);
+  const growRef = useRef(0);
+  const ctxRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => () => window.clearInterval(growRef.current), []);
 
   // waveform visualizer fed by the real beat
   useEffect(() => {
@@ -81,11 +86,16 @@ export function AIBaySection() {
     if (!audioRef.current) {
       const el = new Audio();
       el.crossOrigin = "anonymous";
+      el.addEventListener("ended", () => {
+        setPhase("idle");
+        releaseAudio("aibay");
+      });
       audioRef.current = el;
     }
     const el = audioRef.current;
     if (!analyserRef.current) {
       const ctx = new AudioContext();
+      ctxRef.current = ctx;
       const src = ctx.createMediaElementSource(el);
       const an = ctx.createAnalyser();
       an.fftSize = 256;
@@ -108,29 +118,42 @@ export function AIBaySection() {
   };
 
   const claim = useExclusiveAudio("aibay", () => {
+    // another player took over: stop the beat AND any pending "grow" so it
+    // can't start late on top of what the visitor just picked
+    window.clearInterval(growRef.current);
     audioRef.current?.pause();
-    setPhase((p) => (p === "playing" ? "idle" : p));
-  });
+    setPhase("idle");
+  }, "AI BAY");
 
   const generate = () => {
     if (phase === "growing") return;
     audioRef.current?.pause();
+    // build/resume the audio graph inside the click (user gesture)
+    ensureAudio();
+    ctxRef.current?.resume().catch(() => {});
     const beat = pickBeat();
     setCurrent(beat);
     setPhase("growing");
     setProgress(0);
-    const iv = window.setInterval(() => {
-      setProgress((p) => {
-        const next = p + 4 + Math.random() * 5;
-        if (next >= 100) {
-          window.clearInterval(iv);
-          // play the real beat
-          const el = ensureAudio();
-          el.src = asset(beat.file);
-          el.play().then(() => claim()).catch(() => setPhase("playing"));
-          return 100;
-        }
-        return next;
+    // progress is tracked locally - the old version started playback from
+    // inside a setState updater, which React may run twice (double trigger)
+    let p = 0;
+    window.clearInterval(growRef.current);
+    growRef.current = window.setInterval(() => {
+      p += 4 + Math.random() * 5;
+      if (p < 100) {
+        setProgress(p);
+        return;
+      }
+      window.clearInterval(growRef.current);
+      setProgress(100);
+      const el = ensureAudio();
+      claim();
+      el.src = asset(beat.file);
+      setPhase("playing");
+      el.play().catch(() => {
+        setPhase("idle");
+        releaseAudio("aibay");
       });
     }, 55);
   };

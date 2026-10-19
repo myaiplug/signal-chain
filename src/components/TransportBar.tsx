@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { engine } from "../audio/engine";
+import { currentAudio, onNowPlaying } from "../audio/bus";
+import { TOOL_LINKS } from "../data/artists";
 
-export function TransportBar({ muted }: { muted: boolean }) {
+export function TransportBar() {
+  const [np, setNp] = useState(currentAudio());
+  useEffect(() => onNowPlaying(setNp), []);
   const [lufs, setLufs] = useState(-60);
   const [peak, setPeak] = useState(-60);
   const [corr, setCorr] = useState(1);
@@ -38,16 +42,20 @@ export function TransportBar({ muted }: { muted: boolean }) {
       className="fixed left-1/2 top-3 z-[80] flex w-[min(94vw,880px)] -translate-x-1/2 items-center gap-3 rounded-xl border border-[#1a5048] bg-[#041216]/85 px-4 py-2.5 font-mono text-[10px] backdrop-blur-md"
       style={{ boxShadow: "0 10px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(223,255,230,0.05)" }}
     >
-      <div className="flex items-center gap-2">
-        <span className={`led ${engine.playing && !muted ? "on" : ""}`} />
-        <span className="tracking-[0.25em] text-[#7aafa0]">
-          {muted ? "MUTED" : engine.playing ? "RUNNING" : "IDLE"}
+      <a href="#top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="shrink-0 font-display text-[11px] font-700 tracking-[0.18em] text-[#dffee6]">
+        TBM <span className="text-[#00ffaa]">×</span> B33
+      </a>
+      <div className="h-4 w-px bg-[#1a5048]" />
+      <div className="flex min-w-0 items-center gap-2" data-testid="now-playing">
+        <span className={`led ${np ? "on" : ""}`} />
+        <span className="truncate tracking-[0.25em] text-[#7aafa0]">
+          {np ? `NOW PLAYING · ${np.label || "TRACK"}` : "IDLE · ONE TRACK AT A TIME"}
         </span>
       </div>
 
       <div className="hidden h-4 w-px bg-[#1a5048] sm:block" />
 
-      <div className="hidden items-center gap-2 sm:flex">
+      <div className={`hidden items-center gap-2 ${engine.playing ? "sm:flex" : ""}`}>
         <span className="text-[#1a5048]">LUFS</span>
         <div className="relative h-1.5 w-24 overflow-hidden rounded-full bg-[#020a0c]">
           <div
@@ -61,7 +69,7 @@ export function TransportBar({ muted }: { muted: boolean }) {
         </span>
       </div>
 
-      <div className="hidden items-center gap-2 md:flex">
+      <div className={`hidden items-center gap-2 ${engine.playing ? "lg:flex" : ""}`}>
         <span className="text-[#1a5048]">PK</span>
         <span className="w-12 tabular-nums text-[#7aafa0]">{peak.toFixed(1)}</span>
         <span className="text-[#1a5048]">CORR</span>
@@ -72,9 +80,14 @@ export function TransportBar({ muted }: { muted: boolean }) {
 
       <div className="ml-auto flex items-center gap-3">
         <span className="hidden tabular-nums text-[#7aafa0] sm:inline">{time}</span>
-        <span className="rounded border border-[#1a5048] px-2 py-0.5 text-[9px] tracking-[0.2em] text-[#00ffaa]">
-          88 BPM · -14 TARGET
-        </span>
+        <a
+          href={TOOL_LINKS.store}
+          target="_blank"
+          rel="noreferrer"
+          className="whitespace-nowrap rounded border border-[#00ffaa66] px-2 py-0.5 text-[9px] tracking-[0.2em] text-[#00ffaa] transition-colors hover:bg-[#003828]"
+        >
+          STORE ↗
+        </a>
       </div>
     </motion.div>
   );

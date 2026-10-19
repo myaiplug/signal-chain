@@ -161,7 +161,7 @@ export function NoDAWRacksUnit() {
     timeData: new Float32Array(1024),
   });
 
-  const claim = useExclusiveAudio("nodaw-racks", () => stop());
+  const claim = useExclusiveAudio("nodaw-racks", () => stop(), "NODAW RACKS");
 
   // build graph once
   const build = useCallback(() => {
@@ -290,7 +290,7 @@ export function NoDAWRacksUnit() {
     s.makeup!.disconnect();
     s.pre.disconnect();
 
-    let head: AudioNode;
+    let head: AudioNode = s.pre;
     const startAt = (n: AudioNode) => {
       head = n;
     };
@@ -341,12 +341,12 @@ export function NoDAWRacksUnit() {
   const play = useCallback(async () => {
     build();
     const s = A.current;
+    claim(); // silence everything else before the rack starts
     if (s.ctx!.state === "suspended") await s.ctx!.resume();
-    await s.audio!.play().catch(() => {});
     s.playingFlag = true;
     setPlaying(true);
-    claim();
     meter();
+    await s.audio!.play().catch(() => stop());
   }, [build, claim, meter]);
 
   function stop() {
@@ -478,7 +478,7 @@ export function NoDAWRacksUnit() {
 }
 
 /* ---------------- DSP helpers ---------------- */
-function makeCurve(amount: number): Float32Array {
+function makeCurve(amount: number): Float32Array<ArrayBuffer> {
   const n = 1024;
   const curve = new Float32Array(n);
   const k = amount * 12 + 0.5;

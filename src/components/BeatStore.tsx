@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BEATS, BUNDLE_TIERS, type Beat, calculateBundlePrice } from "../data/beats";
 import { BeatDetailPage } from "./BeatDetailPage";
-import { claimAudio } from "../audio/bus";
+import { releaseAudio } from "../audio/bus";
+import { useExclusiveAudio } from "../audio/useExclusiveAudio";
 
 type Filter = "all" | "trap" | "boom bap" | "phonk" | "drill" | "west coast" | "atlanta";
 
@@ -280,6 +281,13 @@ function BeatCard({
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [previewDuration, setPreviewDuration] = useState(0);
+  const owner = `preview-${beat.id}`;
+  // the old card claimed the bus but never listened to it, so previews
+  // stacked on top of each other and on top of every other player
+  const claim = useExclusiveAudio(owner, () => {
+    audioRef.current?.pause();
+    setPlaying(false);
+  }, beat.title.toUpperCase());
 
   useEffect(() => {
     const audio = new Audio(beat.file);
@@ -288,7 +296,10 @@ function BeatCard({
     audio.addEventListener("loadedmetadata", () => {
       setPreviewDuration(audio.duration);
     });
-    audio.addEventListener("ended", () => setPlaying(false));
+    audio.addEventListener("ended", () => {
+      setPlaying(false);
+      releaseAudio(owner);
+    });
     return () => {
       audio.pause();
       audio.src = "";
@@ -302,12 +313,18 @@ function BeatCard({
     if (playing) {
       audio.pause();
       setPlaying(false);
+      releaseAudio(owner);
     } else {
       audio.currentTime = 0;
       audio.volume = 0.7;
-      await claimAudio(`preview-${beat.id}`);
-      await audio.play();
+      claim();
       setPlaying(true);
+      try {
+        await audio.play();
+      } catch {
+        setPlaying(false);
+        releaseAudio(owner);
+      }
     }
   };
 
@@ -381,6 +398,8 @@ function BeatCard({
         >
           <button
             onClick={handlePreview}
+            aria-label={playing ? `Pause ${beat.title} preview` : `Play ${beat.title} preview`}
+            data-testid="preview-btn"
             className="w-14 h-14 rounded-full bg-[#1a5048]/40 backdrop-blur-sm border border-[#1a5048]/60 flex items-center justify-center hover:bg-[#1a5048]/60 transition-all"
           >
             {playing ? (

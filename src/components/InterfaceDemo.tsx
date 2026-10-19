@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { GlitchText } from "./vfx";
+import { useExclusiveAudio } from "../audio/useExclusiveAudio";
 
 const BASE = import.meta.env.BASE_URL || "/";
 
@@ -10,6 +11,23 @@ const BASE = import.meta.env.BASE_URL || "/";
  */
 export function InterfaceDemo() {
   const [live, setLive] = useState(false);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+
+  // the embedded FanTune demo has its own Web Audio player: bridge it to the
+  // bus over postMessage (same origin) so it obeys one-track-at-a-time too
+  const claim = useExclusiveAudio("fantune", () => {
+    frameRef.current?.contentWindow?.postMessage({ type: "tbm-audio", action: "pause" }, window.location.origin);
+  }, "FANTUNE DEMO");
+
+  useEffect(() => {
+    const onMsg = (e: MessageEvent) => {
+      if (e.origin !== window.location.origin) return;
+      if (e.source !== frameRef.current?.contentWindow) return;
+      if (e.data?.type === "tbm-audio" && e.data.action === "claim") claim();
+    };
+    window.addEventListener("message", onMsg);
+    return () => window.removeEventListener("message", onMsg);
+  }, [claim]);
 
   return (
     <div className="panel relative overflow-hidden p-6">
@@ -40,7 +58,7 @@ export function InterfaceDemo() {
             className="group relative block w-full cursor-pointer"
           >
             <img
-              src={`${BASE}interface/plugin_hero.png`}
+              src={`${BASE}interface/plugin_hero.webp`}
               alt="FanTune interface"
               className="h-[380px] w-full object-cover object-top opacity-80 transition-all duration-700 group-hover:scale-[1.03] group-hover:opacity-100 sm:h-[460px]"
             />
@@ -58,6 +76,7 @@ export function InterfaceDemo() {
           </button>
         ) : (
           <motion.iframe
+            ref={frameRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             src={`${BASE}interface/index.html`}

@@ -1,32 +1,21 @@
-# React + TypeScript + Vite
+# The Beat Mob × bTHIRTYthreezy
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The personal site of Brian Jutz: The Beat Mob catalog, the bTHIRTYthreezy solo project, and the people around them (Green Thumbz, Ceasa Matic), plus the audio tools he builds.
 
-Currently, two official plugins are available:
+**Live:** https://myaiplug.github.io/signal-chain/
+**Store:** https://beat-mob-store.vercel.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## How playback works
 
-## React Compiler
+- **One track at a time.** Every player on the page (the Spotify decks, Vault, AI Bay, the beat store previews, the rack demos, the FanTune iframe and the house soundtrack) goes through `src/audio/bus.ts`. Starting one stops all the others. `src/audio/mediaGuard.ts` is a backstop: any `<audio>` element that starts pauses every other one.
+- **Random opener.** `src/data/intro.ts` picks one of the four artists on each visit and never repeats the previous visit's pick. Add `?opener=beatmob|b33|greenthumbz|ceasa` to the URL to force one. The pick's Spotify player is loaded in the hero behind the entry screen. **Enter & Play** is the user gesture that starts it through the Spotify iFrame API. If the browser still holds the audio back, the deck asks for one tap.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Develop
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm ci
+npm run dev      # http://localhost:5173/signal-chain/
+npm run build    # outputs dist/, published to the gh-pages branch
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Audio and images are stored in Git LFS (`git lfs pull`).

@@ -30,7 +30,7 @@ export function MasteringSection() {
       <div className="w-full max-w-3xl text-center">
         <div className="font-mono text-[10px] tracking-[0.5em] text-[#9eff00]">04 · MASTERING</div>
         <h2 className="mt-3 font-display text-4xl font-700 tracking-tight text-[#dffee6] sm:text-6xl">
-          <GlitchText text="YOUR SIGNAL, MASTERED." />
+          <GlitchText text="YOUR RECORD, MASTERED." />
         </h2>
 
         {/* the stream-proof counter */}
@@ -91,7 +91,7 @@ export function MasteringSection() {
               <div className="mt-1 text-base tabular-nums text-[#00ffaa]">-1.0</div>
             </div>
             <div className="panel-inset p-3">
-              <div className="text-[#1a5048]">CHAIN</div>
+              <div className="text-[#1a5048]">QC</div>
               <div className="mt-1 text-base text-[#00ffaa]">PASSED</div>
             </div>
           </div>
@@ -127,7 +127,7 @@ export function MasteringSection() {
             href={`mailto:${TOOL_LINKS.email}`}
             className="rounded-xl border border-[#00ffaa] bg-[#003828] px-6 py-3 font-mono text-[10px] font-bold tracking-[0.3em] text-[#dffee6] transition-transform hover:scale-105"
           >
-            HIRE THE CHAIN
+            HIRE THE MOB
           </a>
         </div>
       </div>
@@ -136,9 +136,9 @@ export function MasteringSection() {
         <div className="marquee-track font-mono text-[9px] tracking-[0.4em] text-[#1a5048]">
           {[...Array(2)].map((_, k) => (
             <span key={k} className="pr-8">
-              SIGNAL PROCESSED · -14 LUFS · TRUE PEAK SAFE · PHASE COHERENT ·
-              SIGNAL PROCESSED · -14 LUFS · TRUE PEAK SAFE · PHASE COHERENT ·
-              SIGNAL PROCESSED · -14 LUFS · TRUE PEAK SAFE · PHASE COHERENT ·
+              THE BEAT MOB × bTHIRTYthreezy · -14 LUFS · TRUE PEAK SAFE · PHASE COHERENT ·
+              THE BEAT MOB × bTHIRTYthreezy · -14 LUFS · TRUE PEAK SAFE · PHASE COHERENT ·
+              THE BEAT MOB × bTHIRTYthreezy · -14 LUFS · TRUE PEAK SAFE · PHASE COHERENT ·
               &nbsp;
             </span>
           ))}

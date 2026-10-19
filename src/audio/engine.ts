@@ -1,4 +1,6 @@
-// THE SITE SOUNDTRACK - a real trimmed beat with the producer tag,
+import { claimAudio, releaseAudio } from "./bus"
+
+// THE HOUSE SOUNDTRACK - a real trimmed beat with the producer tag,
 // routed through a Web Audio graph so the meters, screw dial, warp
 // and tape-stop all manipulate the REAL audio element.
 
@@ -66,18 +68,22 @@ class AmbientEngine {
     this.analyser.connect(ctx.destination)
   }
 
+  // Only ever started by an explicit click (the Screw unit's play button).
+  // Claims the bus first so nothing else keeps playing underneath it.
   async start() {
     this.init()
+    claimAudio("ambient", "HOUSE SOUNDTRACK · APPLIED PRESSURE")
     await this.ctx!.resume()
     try {
       await this.audio!.play()
     } catch {
-      /* autoplay blocked - muted entry handles this */
+      releaseAudio("ambient")
     }
   }
 
   pause() {
-    this.audio?.pause()
+    if (this.audio && !this.audio.paused) this.audio.pause()
+    releaseAudio("ambient")
   }
 
   setVolume(v: number) {

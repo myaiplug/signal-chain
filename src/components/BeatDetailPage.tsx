@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { claimAudio } from "../audio/bus";
+import { releaseAudio } from "../audio/bus";
+import { useExclusiveAudio } from "../audio/useExclusiveAudio";
 import { BUNDLE_TIERS, type Beat, calculateBundlePrice } from "../data/beats";
 
 interface BeatDetailPageProps {
@@ -21,6 +22,11 @@ export function BeatDetailPage({ beat, onClose }: BeatDetailPageProps) {
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   const bundleInfo = calculateBundlePrice([beat.id], selectedTier);
+  const owner = `beat-${beat.id}`;
+  const claim = useExclusiveAudio(owner, () => {
+    audioRef.current?.pause();
+    setPlaying(false);
+  }, beat.title.toUpperCase());
 
   useEffect(() => {
     const audio = new Audio(beat.file);
@@ -38,6 +44,7 @@ export function BeatDetailPage({ beat, onClose }: BeatDetailPageProps) {
 
     audio.addEventListener("ended", () => {
       setPlaying(false);
+      releaseAudio(`beat-${beat.id}`);
     });
 
     return () => {
@@ -116,12 +123,18 @@ export function BeatDetailPage({ beat, onClose }: BeatDetailPageProps) {
     if (playing) {
       audio.pause();
       setPlaying(false);
+      releaseAudio(owner);
     } else {
-      await claimAudio(`beat-${beat.id}`);
+      claim();
       if (audioCtxRef.current?.state === "suspended") {
         await audioCtxRef.current.resume();
       }
-      await audio.play();
+      try {
+        await audio.play();
+      } catch {
+        releaseAudio(owner);
+        return;
+      }
       setPlaying(true);
       if (!audioCtxRef.current) {
         await initAudioGraph();

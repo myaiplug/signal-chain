@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useExclusiveAudio } from "../audio/useExclusiveAudio";
+import { releaseAudio } from "../audio/bus";
 
 const BASE = import.meta.env.BASE_URL || "/";
 const asset = (p: string) => BASE + p;
@@ -26,18 +27,30 @@ export function AIBeatsSection() {
   const claim = useExclusiveAudio("ai-beats", () => {
     audioRef.current?.pause();
     setPlayingIdx(null);
-  });
+  }, "AI BEATS");
 
   const toggle = (idx: number) => {
-    if (!audioRef.current) audioRef.current = new Audio();
+    if (!audioRef.current) {
+      const fresh = new Audio();
+      fresh.addEventListener("ended", () => {
+        setPlayingIdx(null);
+        releaseAudio("ai-beats");
+      });
+      audioRef.current = fresh;
+    }
     const el = audioRef.current;
     if (playingIdx === idx) {
       el.pause();
       setPlayingIdx(null);
+      releaseAudio("ai-beats");
       return;
     }
+    claim(); // stop everything else first, THEN start
     el.src = asset(AI_BEATS[idx].file);
-    el.play().then(() => claim()).catch(() => {});
+    el.play().catch(() => {
+      setPlayingIdx(null);
+      releaseAudio("ai-beats");
+    });
     setPlayingIdx(idx);
   };
 

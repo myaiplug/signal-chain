@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Lenis from "lenis";
 import { engine } from "./audio/engine";
-import { onAudioClaimed, claimAudio } from "./audio/bus";
+import { onAudioClaimed } from "./audio/bus";
+import { spotifyDecks } from "./audio/spotify";
+import { OPENER } from "./data/intro";
+import { TOOL_LINKS } from "./data/artists";
 import { PowerOnOverlay } from "./components/PowerOnOverlay";
 import { TransportBar } from "./components/TransportBar";
 import { InputSection, SpectrumBackdrop } from "./components/InputSection";
@@ -14,13 +17,15 @@ import { BeatStore } from "./components/BeatStore";
 import { MasteringSection } from "./components/MasteringSection";
 import { TapeStopLever } from "./components/TapeStopLever";
 
+const HERO_DECK = "spotify-hero";
+
 export default function App() {
   const [entered, setEntered] = useState(false);
-  const [muted, setMuted] = useState(false);
+  const [withSound, setWithSound] = useState(false);
   const [tapeStopped, setTapeStopped] = useState(false);
   const lenis = useRef<Lenis | null>(null);
 
-  // audio exclusivity: ambient soundtrack stops when any other player starts
+  // the house soundtrack (Web Audio engine) stops whenever anything else claims the speakers
   useEffect(() => {
     return onAudioClaimed((owner) => {
       if (owner !== "ambient") engine.pause();
@@ -62,17 +67,15 @@ export default function App() {
     return () => window.removeEventListener("pointermove", move);
   }, [entered]);
 
-  const handleTapeStop = () => {
-    setTapeStopped(true);
-  };
-
-  const handleEnter = (m: boolean) => {
-    setMuted(m);
+  // ONE entry point, ONE track: the click on the overlay is the user gesture
+  // that starts the randomly picked opener in the hero deck. Nothing else
+  // auto-starts (the old build also fired the house soundtrack here, so the
+  // opener and any Spotify play would stack on top of it).
+  const handleEnter = (sound: boolean) => {
+    if (entered) return;
+    setWithSound(sound);
     setEntered(true);
-    if (!m) {
-      // beats are already tagged - go straight into the soundtrack
-      engine.start().then(() => claimAudio("ambient"));
-    }
+    if (sound) spotifyDecks.get(HERO_DECK)?.play();
   };
 
   const handleRewind = () => {
@@ -82,11 +85,13 @@ export default function App() {
 
   return (
     <div className="grain scanlines min-h-screen bg-[#03080a]">
-      <div
-        id="cursor-dot"
-        style={{ display: entered ? "block" : "none" }}
-      />
+      <div id="cursor-dot" style={{ display: entered ? "block" : "none" }} />
       <SpectrumBackdrop />
+      {/* fixed UI lives OUTSIDE #page-warp: its will-change makes it the
+          containing block for position:fixed, which made the bar scroll away */}
+      <AnimatePresence>{!entered && <PowerOnOverlay opener={OPENER} onEnter={handleEnter} />}</AnimatePresence>
+      {entered && <TransportBar />}
+      {entered && <TapeStopLever onTapeStop={() => setTapeStopped(true)} onRewind={handleRewind} />}
 
       <div
         id="page-warp"
@@ -97,24 +102,34 @@ export default function App() {
             : {}
         }
       >
-        <AnimatePresence>{!entered && <PowerOnOverlay onEnter={handleEnter} />}</AnimatePresence>
-
-        {entered && (
-          <>
-            <TransportBar muted={muted} />
-            <main>
-              <InputSection />
-              <CatalogSection />
+        <main>
+          {/* the hero is mounted behind the overlay so the opener's player is
+              already loaded when the visitor taps ENTER */}
+          <InputSection opener={OPENER} deckOwner={HERO_DECK} entered={entered} withSound={withSound} />
+          {entered && (
+            <>
+              <CatalogSection initial={OPENER} />
               <RackSection />
               <AIBaySection />
               <VaultSection />
               <BeatStore />
               <MasteringSection />
-            </main>
-            <TapeStopLever onTapeStop={handleTapeStop} onRewind={handleRewind} />
-
-            <footer className="relative z-10 border-t border-[#1a504855] px-6 py-8 pb-24 text-center font-mono text-[9px] tracking-[0.3em] text-[#1a5048]">
-              THE SIGNAL CHAIN · BRIAN JUTZ · {new Date().getFullYear()} · EVERY SOUND ON THIS PAGE WAS SYNTHESIZED LIVE IN YOUR BROWSER
+            </>
+          )}
+        </main>
+        {entered && (
+          <>
+            <footer className="relative z-10 border-t border-[#1a504855] px-6 py-10 pb-24 text-center font-mono text-[9px] tracking-[0.3em] text-[#1a5048]">
+              <div className="font-display text-sm font-600 tracking-[0.2em] text-[#7aafa0]">
+                THE BEAT MOB <span className="text-[#00ffaa]">×</span> bTHIRTYthreezy
+              </div>
+              <div className="mt-3">
+                BRIAN JUTZ · {new Date().getFullYear()} ·{" "}
+                <a href={TOOL_LINKS.store} target="_blank" rel="noreferrer" className="text-[#7aafa0] hover:text-[#00ffaa]">
+                  THE BEAT MOB STORE
+                </a>{" "}
+                · <a href={`mailto:${TOOL_LINKS.email}`} className="text-[#7aafa0] hover:text-[#00ffaa]">{TOOL_LINKS.email.toUpperCase()}</a>
+              </div>
             </footer>
           </>
         )}

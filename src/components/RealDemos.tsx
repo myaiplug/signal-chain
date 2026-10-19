@@ -84,6 +84,7 @@ export function SyrupLab() {
   const play = useCallback(async () => {
     const s = ref.current;
     if (!s.buf) return;
+    claim(); // stop everything else first
     if (!s.ctx) s.ctx = new AudioContext();
     if (s.ctx.state === "suspended") await s.ctx.resume();
     stopSource();
@@ -100,7 +101,6 @@ export function SyrupLab() {
     s.startedAt = s.ctx.currentTime - s.offset;
     s.playing = true;
     setPlaying(true);
-    claim();
     arm();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rate, arm]);
@@ -139,7 +139,7 @@ export function SyrupLab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [track.id]);
 
-  const claim = useExclusiveAudio("syrup", pause);
+  const claim = useExclusiveAudio("syrup", pause, "SCREWAI SYRUP LAB");
 
   const toggle = () => (playing ? pause() : play());
 
@@ -364,6 +364,7 @@ export function RealABUnit() {
   const play = useCallback(async () => {
     const s = ref.current;
     if (!s.bufA || !s.bufB) return;
+    claim(); // stop everything else first
     if (!s.ctx) s.ctx = new AudioContext();
     if (s.ctx.state === "suspended") await s.ctx.resume();
     stopAll();
@@ -392,7 +393,6 @@ export function RealABUnit() {
     s.startedAt = s.ctx.currentTime - s.offset;
     s.playing = true;
     setPlaying(true);
-    claim();
     arm();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [side, arm]);
@@ -432,7 +432,7 @@ export function RealABUnit() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [track.id]);
 
-  const claim = useExclusiveAudio("ab", pause);
+  const claim = useExclusiveAudio("ab", pause, "CO-PRODUCER A/B");
 
   const swapSide = (next: "before" | "after") => {
     const s = ref.current;
@@ -611,15 +611,22 @@ export function RealStemUnit() {
     }
   };
 
+  const playingRef = useRef(false);
   const claim = useExclusiveAudio("stems", () => {
+    // only bank the play position if we were actually playing
+    // (the old handler overwrote it on every claim, corrupting resume)
+    if (!playingRef.current) return;
     const ctx = ctxRef.current;
     if (ctx) offsetRef.current = Math.max(0, ctx.currentTime - startedRef.current);
     stopAll();
+    playingRef.current = false;
     setPlaying(false);
-  });
+  }, "LIMINAL STEMS");
 
   const play = async () => {
-    const ctx = ctxRef.current!;
+    const ctx = ctxRef.current;
+    if (!ctx || !stemsRef.current.length) return;
+    claim();
     if (ctx.state === "suspended") await ctx.resume();
     stopAll();
     const at = Math.max(0, offsetRef.current);
@@ -631,14 +638,15 @@ export function RealStemUnit() {
       s.src = src;
     }
     startedRef.current = ctx.currentTime - offsetRef.current;
+    playingRef.current = true;
     setPlaying(true);
-    claim();
   };
 
   const pause = () => {
     const ctx = ctxRef.current!;
     offsetRef.current = Math.max(0, ctx.currentTime - startedRef.current);
     stopAll();
+    playingRef.current = false;
     setPlaying(false);
   };
 

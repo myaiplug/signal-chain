@@ -1273,6 +1273,23 @@ document.getElementById('audio-file-input').addEventListener('change', async (e)
   reader.readAsArrayBuffer(file);
 });
 
+// ── one-track-at-a-time bridge with the parent page ─────────────
+function stopFanTunePlayback() {
+  if (!isPlaying) return;
+  try { if (audioSource) audioSource.stop(); } catch (e) { /* already stopped */ }
+  isPlaying = false;
+  document.getElementById('play-btn').textContent = '▶ Play';
+}
+window.addEventListener('message', (e) => {
+  if (e.origin !== location.origin) return;
+  if (e.data && e.data.type === 'tbm-audio' && e.data.action === 'pause') stopFanTunePlayback();
+});
+function claimParentAudio() {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'tbm-audio', action: 'claim', owner: 'fantune' }, location.origin);
+  }
+}
+
 document.getElementById('play-btn').addEventListener('click', () => {
   if (!audioContext) initAudioContext();
   if (!audioBuffer) return;
@@ -1285,7 +1302,9 @@ document.getElementById('play-btn').addEventListener('click', () => {
     isPlaying = false;
     document.getElementById('play-btn').textContent = '▶ Play';
   } else {
-    // Start playback
+    // Start playback (tell the parent page first so everything else stops)
+    claimParentAudio();
+    if (audioContext.state === 'suspended') audioContext.resume();
     audioSource = audioContext.createBufferSource();
     audioSource.buffer = audioBuffer;
     audioSource.connect(scriptProcessor);
