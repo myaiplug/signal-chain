@@ -1,42 +1,28 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Lenis from "lenis";
-import { engine } from "./audio/engine";
-import { onAudioClaimed } from "./audio/bus";
 import { spotifyDecks } from "./audio/spotify";
 import { OPENER } from "./data/intro";
 import { TOOL_LINKS } from "./data/artists";
 import { PowerOnOverlay } from "./components/PowerOnOverlay";
 import { TransportBar } from "./components/TransportBar";
-import { InputSection, SpectrumBackdrop } from "./components/InputSection";
+import { InputSection } from "./components/InputSection";
 import { CatalogSection } from "./components/CatalogSection";
-import { RackSection } from "./components/RackSection";
 import { AIBaySection } from "./components/AIBaySection";
 import { VaultSection } from "./components/VaultSection";
 import { BeatStore } from "./components/BeatStore";
 import { MasteringSection } from "./components/MasteringSection";
-import { TapeStopLever } from "./components/TapeStopLever";
 
 const HERO_DECK = "spotify-hero";
 
 export default function App() {
   const [entered, setEntered] = useState(false);
   const [withSound, setWithSound] = useState(false);
-  const [tapeStopped, setTapeStopped] = useState(false);
-  const lenis = useRef<Lenis | null>(null);
-
-  // the house soundtrack (Web Audio engine) stops whenever anything else claims the speakers
-  useEffect(() => {
-    return onAudioClaimed((owner) => {
-      if (owner !== "ambient") engine.pause();
-    });
-  }, []);
 
   // buttery smooth scroll
   useEffect(() => {
     if (!entered) return;
     const l = new Lenis({ lerp: 0.08, wheelMultiplier: 1.05 });
-    lenis.current = l;
     let raf = 0;
     const loop = (t: number) => {
       l.raf(t);
@@ -49,18 +35,16 @@ export default function App() {
     };
   }, [entered]);
 
-  // spectrum-reactive cursor
+  // glowing cursor dot
   useEffect(() => {
     if (!entered) return;
     const dot = document.getElementById("cursor-dot");
     if (!dot) return;
+    const size = 12;
+    dot.style.width = `${size}px`;
+    dot.style.height = `${size}px`;
+    dot.style.margin = `-${size / 2}px 0 0 -${size / 2}px`;
     const move = (e: PointerEvent) => {
-      const spec = engine.getSpectrum();
-      const energy = spec.slice(0, 60).reduce((a, b) => a + b, 0) / (60 * 255);
-      const size = 10 + energy * 26;
-      dot.style.width = `${size}px`;
-      dot.style.height = `${size}px`;
-      dot.style.margin = `-${size / 2}px 0 0 -${size / 2}px`;
       dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
     };
     window.addEventListener("pointermove", move);
@@ -69,8 +53,7 @@ export default function App() {
 
   // ONE entry point, ONE track: the click on the overlay is the user gesture
   // that starts the randomly picked opener in the hero deck. Nothing else
-  // auto-starts (the old build also fired the house soundtrack here, so the
-  // opener and any Spotify play would stack on top of it).
+  // auto-starts.
   const handleEnter = (sound: boolean) => {
     if (entered) return;
     setWithSound(sound);
@@ -78,30 +61,14 @@ export default function App() {
     if (sound) spotifyDecks.get(HERO_DECK)?.play();
   };
 
-  const handleRewind = () => {
-    setTapeStopped(false);
-    lenis.current?.scrollTo(0, { duration: 1.4 });
-  };
-
   return (
     <div className="grain scanlines min-h-screen bg-[#03080a]">
       <div id="cursor-dot" style={{ display: entered ? "block" : "none" }} />
-      <SpectrumBackdrop />
-      {/* fixed UI lives OUTSIDE #page-warp: its will-change makes it the
-          containing block for position:fixed, which made the bar scroll away */}
+      {/* fixed UI lives OUTSIDE the page wrapper so position:fixed stays fixed */}
       <AnimatePresence>{!entered && <PowerOnOverlay opener={OPENER} onEnter={handleEnter} />}</AnimatePresence>
       {entered && <TransportBar />}
-      {entered && <TapeStopLever onTapeStop={() => setTapeStopped(true)} onRewind={handleRewind} />}
 
-      <div
-        id="page-warp"
-        className="relative z-10 transition-all duration-700"
-        style={
-          tapeStopped
-            ? { transform: "perspective(1200px) rotateX(7deg) scale(0.96)", filter: "brightness(0.75) saturate(0.7)" }
-            : {}
-        }
-      >
+      <div id="page" className="relative z-10">
         <main>
           {/* the hero is mounted behind the overlay so the opener's player is
               already loaded when the visitor taps ENTER */}
@@ -109,7 +76,6 @@ export default function App() {
           {entered && (
             <>
               <CatalogSection initial={OPENER} />
-              <RackSection />
               <AIBaySection />
               <VaultSection />
               <BeatStore />

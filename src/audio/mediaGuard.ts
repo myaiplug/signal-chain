@@ -1,6 +1,6 @@
 // Safety net under the audio bus: if ANY <audio>/<video> element starts
 // (even one a component forgot to register), every other media element on the
-// page is paused first. Web Audio buffer players and embeds go through the bus.
+// page is paused first. Spotify embeds go through the bus.
 export function installMediaGuard() {
   const proto = HTMLMediaElement.prototype as HTMLMediaElement & { __tbmGuard?: boolean };
   if (proto.__tbmGuard) return;

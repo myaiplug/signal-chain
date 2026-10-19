@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BEATS, BUNDLE_TIERS, type Beat, calculateBundlePrice } from "../data/beats";
 import { BeatDetailPage } from "./BeatDetailPage";
+import { STORE_URL } from "../data/artists";
 import { releaseAudio } from "../audio/bus";
 import { useExclusiveAudio } from "../audio/useExclusiveAudio";
 
@@ -220,30 +221,18 @@ export function BeatStore() {
                   >
                     CLEAR
                   </button>
-                  <button
-                    onClick={() => {
-                      const tier =
-                        cartItems.length >= 10
-                          ? "bundle10"
-                          : cartItems.length >= 5
-                          ? "bundle5"
-                          : "single";
-                      const info = calculateBundlePrice(cartItems, tier);
-                      alert(
-                        `${cartItems.length} beat(s) — $${info.total.toFixed(2)}${
-                          info.savings > 0
-                            ? `\nYou save $${info.savings.toFixed(2)}!`
-                            : ""
-                        }`
-                      );
-                    }}
+                  <a
+                    href={STORE_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-testid="checkout-link"
                     className="px-6 py-2.5 bg-gradient-to-r from-[#00ffaa] to-[#00d4ff] text-black font-bold text-sm rounded-xl hover:from-[#00d4ff] hover:to-[#9eff00] transition-all duration-300 flex items-center gap-2"
                   >
                     CHECKOUT
                     <span className="font-mono text-[10px] opacity-70">
                       ${calculateBundlePrice(cartItems, cartItems.length >= 10 ? "bundle10" : cartItems.length >= 5 ? "bundle5" : "single").total.toFixed(2)}
                     </span>
-                  </button>
+                  </a>
                 </div>
               </div>
             </motion.div>
@@ -422,6 +411,8 @@ function BeatCard({
           <h3 className="text-white font-bold text-base leading-tight truncate">{beat.title}</h3>
           <button
             onClick={handleAdd}
+            data-testid="add-to-cart"
+            aria-label={isSelected ? `Remove ${beat.title} from selection` : `Add ${beat.title} to selection`}
             className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
               isSelected
                 ? "bg-[#00ffaa] text-black"

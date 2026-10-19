@@ -62,50 +62,10 @@ export const ARTISTS: Artist[] = [
   },
 ]
 
-export interface Module {
-  id: string
-  name: string
-  kind: string
-  url: string
-  desc: string
-}
-
-export const MODULES: Module[] = [
-  {
-    id: "retune",
-    name: "RETUNE 432",
-    kind: "MICROTONAL RETUNE",
-    url: "https://retune-432.vercel.app/",
-    desc: "432Hz retuning with formant preservation. Flip it and the site detunes live.",
-  },
-  {
-    id: "warper",
-    name: "REALITY WARPER",
-    kind: "SPATIAL PSYCHOACOUSTICS",
-    url: "https://harmonic-reality-warper.vercel.app/warper.html",
-    desc: "3D harmonic warp matrix. Bends the rack's filter in real time.",
-  },
-  {
-    id: "halfscrew",
-    name: "HALF-SCREW",
-    kind: "PITCH-LOCKED STRETCH",
-    url: "https://half-screw3.vercel.app/",
-    desc: "Half-speed, pitch-locked. The classic slowdown, done surgically.",
-  },
-  {
-    id: "fantune",
-    name: "FANTUNE SKIN",
-    kind: "INSTRUMENT INTERFACE",
-    url: "https://myaiplug.github.io/fantune-skin/",
-    desc: "Custom instrument controller skin. Hardware-grade UX for software.",
-  },
-]
+export const STORE_URL = "https://beat-mob-store-ruby.vercel.app/"
 
 export const TOOL_LINKS = {
-  coproducer: "https://myaiplug.github.io/coproducer-web/index.html",
-  stemsplit: "https://liminal-stemsplit.onrender.com/",
-  screwai: "https://myaiplug.github.io/ScrewAI-App/",
-  store: "https://beat-mob-store.vercel.app/",
+  store: STORE_URL,
   github: "https://github.com/myaiplug",
   email: "thebeatmobmedia@gmail.com",
 }

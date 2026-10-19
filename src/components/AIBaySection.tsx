@@ -162,7 +162,7 @@ export function AIBaySection() {
     <section className="relative min-h-[100svh] px-4 py-28 sm:px-8">
       <div className="mx-auto max-w-4xl">
         <div className="mb-14 text-center">
-          <div className="font-mono text-[10px] tracking-[0.5em] text-[#00d4ff]">03 · THE AI BAY</div>
+          <div className="font-mono text-[10px] tracking-[0.5em] text-[#00d4ff]">02 · THE AI BAY</div>
           <h2 className="mt-3 font-display text-4xl font-700 tracking-tight text-[#dffee6] sm:text-6xl">
             PROMPT. GROW. LISTEN.
           </h2>

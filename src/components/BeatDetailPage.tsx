@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { releaseAudio } from "../audio/bus";
 import { useExclusiveAudio } from "../audio/useExclusiveAudio";
+import { STORE_URL } from "../data/artists";
 import { BUNDLE_TIERS, type Beat, calculateBundlePrice } from "../data/beats";
 
 interface BeatDetailPageProps {
@@ -21,7 +22,6 @@ export function BeatDetailPage({ beat, onClose }: BeatDetailPageProps) {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  const bundleInfo = calculateBundlePrice([beat.id], selectedTier);
   const owner = `beat-${beat.id}`;
   const claim = useExclusiveAudio(owner, () => {
     audioRef.current?.pause();
@@ -165,13 +165,12 @@ export function BeatDetailPage({ beat, onClose }: BeatDetailPageProps) {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[95] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="beat-title"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-[#0a0f0a] via-[#03080a] to-[#0a0f0a]" />
-      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "url(/img/grain.png)" }} />
 
       <motion.div
         initial={{ y: 20, opacity: 0 }}
@@ -414,7 +413,11 @@ export function BeatDetailPage({ beat, onClose }: BeatDetailPageProps) {
                     })}
                   </div>
 
-                  <button
+                  <a
+                    href={STORE_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-testid="detail-buy-link"
                     className="w-full mt-6 py-4 bg-gradient-to-r from-[#00ffaa] to-[#00d4ff] text-black font-bold text-lg rounded-xl hover:from-[#00d4ff] hover:to-[#9eff00] transition-all duration-300 flex items-center justify-center gap-2"
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -422,8 +425,8 @@ export function BeatDetailPage({ beat, onClose }: BeatDetailPageProps) {
                       <circle cx="20" cy="21" r="1" />
                       <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                     </svg>
-                    ADD TO CART — ${bundleInfo.total.toFixed(2)}
-                  </button>
+                    BUY AT THE BEAT MOB STORE ↗
+                  </a>
                 </section>
 
                 <section className="bg-[#0a120a]/60 border border-[#1a5048]/20 rounded-xl p-5">

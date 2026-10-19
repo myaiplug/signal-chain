@@ -129,12 +129,6 @@ body {
 .reel-spinning { animation: reel-spin 2.4s linear infinite; }
 .reel-spinning-slow { animation: reel-spin 7s linear infinite; }
 
-/* ---------- tape stop page warp ---------- */
-#page-warp {
-  transform-origin: 50% 100%;
-  will-change: transform, filter;
-}
-
 /* ---------- spectrum cursor dot ---------- */
 #cursor-dot {
   position: fixed;

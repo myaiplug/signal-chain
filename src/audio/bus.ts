@@ -1,6 +1,5 @@
 // Audio-exclusivity bus: ONE track plays at a time, site-wide.
-// Every player (HTML audio, Web Audio buffers, Spotify embeds, the FanTune
-// iframe) calls claimAudio(owner) *before* it starts making sound. Every other
+// Every player (HTML audio, Spotify embeds) calls claimAudio(owner) *before* it starts making sound. Every other
 // registered player hears the claim and stops itself.
 type Listener = (owner: string) => void;
 type NowPlayingListener = (np: { owner: string; label: string } | null) => void;

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { engine } from "../audio/engine";
 import { GlitchText, Orb } from "./vfx";
 import type { Artist } from "../data/artists";
 import { TOOL_LINKS } from "../data/artists";
@@ -8,31 +7,28 @@ import { useSpotifyEmbed } from "../audio/spotify";
 
 const BASE = import.meta.env.BASE_URL || "/";
 
-/** Live waveform canvas fed by the engine's analyser */
-export function WaveCanvas({ className = "", opacity = 0.9 }: { className?: string; opacity?: number }) {
+/** Decorative waveform line along the bottom of the hero */
+function WaveCanvas({ className = "", opacity = 0.9 }: { className?: string; opacity?: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const cv = ref.current!;
     const ctx2d = cv.getContext("2d")!;
     let raf = 0;
+    const N = 1024;
     const draw = () => {
       const w = (cv.width = cv.offsetWidth * devicePixelRatio);
       const h = (cv.height = cv.offsetHeight * devicePixelRatio);
       ctx2d.clearRect(0, 0, w, h);
-      const data = engine.getWaveform();
-      const silent = !engine.playing;
       const now = performance.now() / 1000;
       ctx2d.strokeStyle = "#00ffaa";
       ctx2d.lineWidth = 1.5 * devicePixelRatio;
       ctx2d.shadowColor = "rgba(0,255,170,0.6)";
       ctx2d.shadowBlur = 12;
       ctx2d.beginPath();
-      for (let i = 0; i < data.length; i++) {
-        const x = (i / data.length) * w;
-        const v = silent
-          ? 0.035 * Math.sin(i * 0.018 + now * 1.4) * Math.sin(i * 0.004 + now * 0.5)
-          : data[i];
+      for (let i = 0; i < N; i++) {
+        const x = (i / N) * w;
+        const v = 0.035 * Math.sin(i * 0.036 + now * 1.4) * Math.sin(i * 0.008 + now * 0.5);
         const y = h / 2 + v * h * 0.42;
         if (i === 0) ctx2d.moveTo(x, y);
         else ctx2d.lineTo(x, y);
@@ -45,45 +41,6 @@ export function WaveCanvas({ className = "", opacity = 0.9 }: { className?: stri
   }, []);
 
   return <canvas ref={ref} className={className} style={{ opacity }} />;
-}
-
-/** Fixed full-viewport spectrum backdrop */
-export function SpectrumBackdrop() {
-  const ref = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const cv = ref.current!;
-    const ctx2d = cv.getContext("2d")!;
-    let raf = 0;
-    const draw = () => {
-      const w = (cv.width = cv.offsetWidth * devicePixelRatio);
-      const h = (cv.height = cv.offsetHeight * devicePixelRatio);
-      ctx2d.clearRect(0, 0, w, h);
-      const spec = engine.getSpectrum();
-      const bins = 72;
-      const bw = w / bins;
-      for (let i = 0; i < bins; i++) {
-        const v = spec[Math.floor((i / bins) * 240)] / 255;
-        const bh = v * h * 0.5;
-        const grad = ctx2d.createLinearGradient(0, h, 0, h - bh);
-        grad.addColorStop(0, "rgba(0,255,170,0.14)");
-        grad.addColorStop(1, "rgba(0,212,255,0.02)");
-        ctx2d.fillStyle = grad;
-        ctx2d.fillRect(i * bw + 1, h - bh, bw - 2, bh);
-      }
-      raf = requestAnimationFrame(draw);
-    };
-    raf = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  return (
-    <canvas
-      ref={ref}
-      className="pointer-events-none fixed inset-0 z-0 h-full w-full"
-      style={{ opacity: 0.5 }}
-    />
-  );
 }
 
 type HeroProps = { opener: Artist; deckOwner: string; entered: boolean; withSound: boolean };

@@ -2,16 +2,11 @@ import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useExclusiveAudio } from "../audio/useExclusiveAudio";
 import { releaseAudio } from "../audio/bus";
+import { STORE_URL } from "../data/artists";
 
 const BASE = import.meta.env.BASE_URL || "/";
 const asset = (p: string) => BASE + p;
 
-// BUY LINKS - set these to the live product pages
-export const VAULT_LINKS = {
-  gumroad: "https://thebeatmob.gumroad.com/", // TODO: exact Vault product URL
-  shopify: "https://thebeatmob.com/", // TODO: exact Vault product URL
-  store: "https://beat-mob-store.vercel.app/",
-};
 
 interface VaultTrack {
   file: string;
@@ -73,7 +68,7 @@ export function VaultSection() {
     <section className="relative min-h-[100svh] px-4 py-28 sm:px-8">
       <div className="mx-auto max-w-4xl">
         <div className="mb-12 text-center">
-          <div className="font-mono text-[10px] tracking-[0.5em] text-[#9eff00]">03.5 · THE VAULT</div>
+          <div className="font-mono text-[10px] tracking-[0.5em] text-[#9eff00]">03 · THE VAULT</div>
           <h2 className="mt-3 font-display text-4xl font-700 tracking-tight text-[#dffee6] sm:text-6xl">
             THE COLLECTIVE
             <span className="block text-[#9eff00]">VAULT · VOL. 1</span>
@@ -144,7 +139,7 @@ export function VaultSection() {
 
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <motion.a
-              href={VAULT_LINKS.gumroad}
+              href={STORE_URL}
               target="_blank"
               rel="noreferrer"
               whileHover={{ scale: 1.04 }}
@@ -152,27 +147,7 @@ export function VaultSection() {
               className="w-full cursor-pointer rounded-xl border-2 border-[#9eff00] bg-[#1a3000] px-8 py-3.5 text-center font-mono text-xs font-bold tracking-[0.3em] text-[#dffee6] sm:w-auto"
               style={{ boxShadow: "0 0 30px rgba(158,255,0,0.2)" }}
             >
-              BUY ON GUMROAD
-            </motion.a>
-            <motion.a
-              href={VAULT_LINKS.shopify}
-              target="_blank"
-              rel="noreferrer"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              className="w-full cursor-pointer rounded-xl border border-[#1a5048] px-8 py-3.5 text-center font-mono text-xs font-bold tracking-[0.3em] text-[#7aafa0] sm:w-auto"
-            >
-              SHOPIFY
-            </motion.a>
-            <motion.a
-              href={VAULT_LINKS.store}
-              target="_blank"
-              rel="noreferrer"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              className="w-full cursor-pointer rounded-xl border border-[#9eff0066] px-8 py-3.5 text-center font-mono text-xs font-bold tracking-[0.3em] text-[#9eff00] sm:w-auto"
-            >
-              BEAT MOB STORE ↗
+              GET THE VAULT AT THE BEAT MOB STORE ↗
             </motion.a>
           </div>
           <p className="mt-4 text-center font-mono text-[8px] tracking-[0.25em] text-[#1a5048]">
