@@ -337,8 +337,22 @@ function BeatCard({
     >
       {/* Visualizer / Waveform Area */}
       <div className="relative h-40 bg-[#03080a] overflow-hidden border-b border-[#1a5048]/10">
+        {/* Cover art: same image the Beat Mob store discount rack uses */}
+        {beat.cover && (
+          <>
+            <img
+              src={beat.cover}
+              alt={beat.title}
+              loading="lazy"
+              decoding="async"
+              data-testid="beat-cover"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#03080a]/80 via-transparent to-transparent" />
+          </>
+        )}
         {/* Abstract waveform bars */}
-        <div className="absolute inset-0 flex items-end justify-center gap-[2px] px-4 pb-2">
+        <div className={`absolute inset-0 flex items-end justify-center gap-[2px] px-4 pb-2${beat.cover ? " h-1/3 top-auto opacity-70" : ""}`}>
           {Array.from({ length: 48 }).map((_, i) => {
             const seed = (beat.bpm * (i + 1) * 7 + beat.title.charCodeAt(0)) % 100;
             const height = 15 + seed * 0.75;
